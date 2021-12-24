@@ -1,0 +1,274 @@
+@charset "utf-8";
+
+@use "spa-loading";
+@use "components/fan-art-card";
+@use "components/pagination";
+@use "components/select-menu";
+@use "components/text-input";
+@use "components/fan-art-name-and-artist";
+@use "components/fan-art-overview-tags";
+@use "placeholders/reset-link-styling";
+@use "placeholders/reset-button-styling";
+
+$loritta-blue: #29a6fe;
+$mobile-version: 1279px;
+
+@mixin bp($point) {
+    @if $point == 'small' {
+        @media (min-width: 360px) { @content; }
+    }
+    @if $point == 'medium' {
+      @media (min-width: 1280px) { @content; }
+    }
+}
+
+:root {
+    --loritta-blue: #29a6fe;
+}
+
+body {
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+    font-family: "Lato", "Arial", "sans-serif";
+}
+
+aside#mobile-left-sidebar {
+    background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
+    height: 50px;
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+    color: white;
+
+    @include bp('medium') {
+        display: none;
+    }
+
+    // We apply the padding on the svg, this way we have a bigger "clicking area", which is useful for mobile users!
+    > .hamburger-button {
+        @extend %reset-button-styling;
+        height: 50px;
+        width: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        > svg {
+            padding: 16px;
+        }
+    }
+
+    > .small-ad {
+        display: none;
+
+        // Only show ad spot if the min width is 480px
+        @media (min-width: 480px) {
+            display: block;
+        }
+    }
+}
+
+// We animate it with a nice "push pane to screen" animation
+@keyframes sidebar-move {
+    from {
+        visibility: hidden;
+        right: 100%;
+    }
+    to {
+        visibility: visible;
+        right: 0%;
+    }
+}
+
+@keyframes toggle-sidebar-visibility {
+    from { visibility: visible; }
+    to { visibility: hidden; }
+}
+
+// This sidebar looks weird because we need to do a lot of weird tricks just to hide the sidebar WHEN THE TRANSITION ENDS
+// We did this by having a "is-closed" state that plays the "toggle-sidebar-visibility" animation
+aside#left-sidebar {
+    // We will keep this as visibility hidden to avoid tabbing to the sidebar elements when they should be hidden
+    // We don't use "display: none;" because it would not animate our mobile transition when opening the sidebar when toggling display state!
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0; // Do not shink the sidebar!
+    box-shadow: initial; // Shadow
+    z-index: 2; // Make the left sidebar be on top of the right sidebar, fixes the shadow
+    color: white;
+    background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
+    // Seems weird but this is only used for small breakpoints
+    top: 0;
+    // Again, for small breakpoints
+    // We don't use 100vh because Chrome Mobile has a dynamic navbar that causes issues, this fixes the issue, albeit the page scroll animation becomes a bit crappy
+    // https://stackoverflow.com/questions/37112218/css3-100vh-not-constant-in-mobile-browser
+    height: calc(100% - 50px);
+    position: fixed;
+    transition-property: transform, box-shadow;
+    transition-duration: 1s; // Used for the nice mobile animation
+    width: 100%;
+    transform: translate(-100%);
+    // Both will change, yay!
+    will-change: transform, box-shadow;
+
+    @media (min-width: 600px) {
+        // Makes it look kinda pretty instead of filling the entire screen
+        // However we will only apply if the screen size lets us do this without looking weird or ugly
+        max-width: 350px;
+    }
+
+    // Used for mobile
+    &.is-open {
+        visibility: visible;
+        top: 0;
+        left: 0%;
+        box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+        transform: translate(0%);
+    }
+
+    &.is-closed {
+        animation: toggle-sidebar-visibility 1s;
+    }
+
+    @include bp('medium') {
+        transform: translate(0%);
+
+        visibility: visible;
+        height: 100vh;
+
+        min-width: 350px;
+
+        position: sticky;
+        top: 0; // These two are REQUIRED for sticky position to work
+        left: 0;
+        box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+    }
+
+    > .entries {
+        padding-left: 1em;
+        padding-right: 1em;
+        height: 100%;
+        overflow: auto;
+        scrollbar-width: thin; // Firefox only for now
+        scrollbar-color: #00c3ff #004ec8; // Also only available in Firefox
+
+        > .divider {
+            width: 100%;
+            border: 1px solid #ffffff57;
+        }
+
+        > .category {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 18px;
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+        }
+
+        // Can be nested within a div
+        .entry {
+            @extend %reset-link-styling;
+
+            opacity: 0.8;
+            display: flex;
+            transition-duration: 0.2s;
+            align-items: center;
+            gap: 0.5em;
+            padding-top: 0.2em;
+            padding-bottom: 0.2em;
+            margin-top: 0.2em;
+            margin-bottom: 0.2em;
+            font-size: 16px;
+
+            &:hover {
+                opacity: 1;
+            }
+
+            > .icon {
+                height: 24px;
+                display: block;
+            }
+        }
+    }
+
+    > .user-info-wrapper {
+        background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 79, 201) 0%, rgb(0, 69, 176) 100%) repeat scroll 0% 0%;
+        height: 60px;
+
+        > .user-info {
+            padding: 8px;
+            height: 100%;
+            width: 100%;
+
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 0.5em;
+
+            > img {
+                // Avatar Icon
+                height: 32px;
+                border-radius: 50%;
+            }
+
+            > .user-tag {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+
+                > .name {
+                    font-weight: bold;
+                }
+
+                > .discriminator {
+                    opacity: 0.8;
+                    font-size: 0.75em;
+                }
+            }
+            
+        }
+    }
+}
+
+section#right-sidebar {    
+    padding-left: 1em;
+    padding-right: 1em;
+    height: 100vh;
+    overflow: auto;
+    width: 100%;
+
+    >.content {
+        width: 100%;
+        max-width: 70em;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+aside#sidebar-ad {
+    width: 160px;
+    max-width: 160px;
+    min-width: 160px;
+    background-color: rgba(200, 200, 200, 255);
+    align-items: center;
+    display: none;
+
+    @include bp('medium') {
+        display: flex;
+    }
+}

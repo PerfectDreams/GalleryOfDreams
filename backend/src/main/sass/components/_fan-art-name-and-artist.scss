@@ -1,0 +1,15 @@
+.fan-art-name-and-artist {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+
+    >.name-and-artist-wrapper {
+        display: flex;
+        flex-direction: column;
+
+        >h1 {
+            margin: 0px;
+        }
+    }
+}

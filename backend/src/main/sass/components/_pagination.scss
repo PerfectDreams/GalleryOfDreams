@@ -1,0 +1,52 @@
+.pagination {
+    >.active {
+        background-color: var(--loritta-blue);
+        border: 0;
+        width: 2em;
+        height: 2em;
+        color: white;
+        font-weight: bold;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+
+    >.inactive {
+        cursor: pointer;
+        background: none;
+        border: 0;
+        width: 2em;
+        height: 2em;
+        color: black;
+        font-weight: bold;
+        border-radius: 7px;
+        font-size: 1em;
+    }
+
+    >.arrow {
+        background-color: var(--loritta-blue);
+        border: 0;
+        width: 2em;
+        height: 2em;
+        color: white;
+        font-weight: bold;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 1em;
+        justify-content: center;
+        align-items: center;
+
+        >svg {
+            width: 1em;
+            height: 1em;
+
+        }
+    }
+
+    >.ellipsis {
+        width: 2em;
+        height: 2em;
+        font-weight: bold;
+        display: inline-block;
+    }
+}

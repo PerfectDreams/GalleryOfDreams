@@ -1,0 +1,29 @@
+home:
+  title: "Boas-Vindas a Galeria de Fan Arts da {perfectDreamsLogo}!"
+  description:
+    - "Uma exposição do trabalho maravilhoso de nossos fãs. Venha dar uma olhada nas artes adoráveis que fizeram para a Loritta, Pantufa, Gabriela, e muito mais, em nossa galeria!"
+
+fanArtBy: "Fan Art de {name}"
+sort: "Ordenar"
+filter: "Filtrar"
+viewAllFanArts: "Mostrar todas as {fanArtCount} fan arts"
+aboutTheFanArts: "Sobre as Fan Arts"
+websiteLocaleIdPath: "pt"
+
+sortType:
+  fanArtCountAscending: "por quantidade de fan arts (crescente)"
+  fanArtCountDescending: "por quantidade de fan arts (decrescente)"
+  alphabeticallyAscending: "alfabeticamente (crescente)"
+  alphabeticallyDescending: "alfabeticamente (decrescente)"
+  dateAscending: "por data (crescente)"
+  dateDescending: "por data (decrescente)"
+
+fanArtTags:
+  outstandingFanArt: "Fan Art Extraordinária!"
+  lorittaChristmas2018Event: "Evento de Natal da Loritta (2018)"
+  comics: "Quadrinhos"
+  lorittaSweaterExtravaganza2019: "Extravaganza de Moletons da Loritta (2019)"
+  lorittaWebsiteArts: "Artes usadas no website da Loritta"
+  lorittaAprilFools2019Event: "Evento de Primeiro de Abril (2019)"
+  lorittaAnniversary2019Event: "Evento de Aniversário da Loritta (2019)"
+  lorittaChristmas2020Event: "Evento de Natal da Loritta (2020)"

@@ -1,0 +1,11 @@
+// Resets "button" tag styling
+%reset-button-styling {
+	background: none;
+	color: inherit;
+    border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+    // Keep the outline, this is used when focusing on the element
+	// outline: inherit;
+}

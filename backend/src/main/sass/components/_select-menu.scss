@@ -1,0 +1,91 @@
+// ===[ CUSTOM SELECT MENU:TM: ]===
+// Because styling a default select menu is hard as fuc
+.select-wrapper {
+    position: relative;
+
+    >.select {
+        border: 1px solid #0000001f;
+        border-radius: 4px;
+        background-color: #0000000a;
+        padding: 8px;
+        cursor: pointer;
+
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+
+        &:focus {
+            outline: blue solid 2px;
+        }
+
+        &.open {
+            border-radius: 4px 4px 0px 0px;
+        }
+
+        >div {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            >.currently-selected-option-content {
+                width: 100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            >.chevron {
+                opacity: 0.5;
+                display: flex;
+                // Center the chevron svg
+                align-items: center;
+                justify-content: center;
+                width: 1em;
+                height: 1em;
+                
+                >svg {
+                    width: 1em;
+                    height: 1em;
+                }
+            }
+        }
+    }
+
+    >.menu {
+        // This can't have a z-index! If it has, then it breaks the pseudo element!
+        position: absolute;
+        top: 100%;
+        background-color: white;
+        border-radius: 0px 0px 4px 4px;
+        width: 100%;
+        color: black;
+        // This looks super ugly without "mix-blend-mode"
+        // However we also need to use "z-index" to avoid content overlapping the dropdown, but "z-index" creates a new stacking context
+        // and that breaks the "mix-blend-mode"!
+        // (with "mix-blend-mode", we need to use a pseudo element)
+        // So... yeah :(
+        box-shadow: 0px 8px 10px rgba(0, 0, 0, 0.3);
+        z-index: 1;
+
+        >.select-menu-entry {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            transition-duration: 0.5s;
+            padding: 8px;
+
+            &:focus {
+                outline: blue solid 2px;
+            }
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            &.selected {
+                background-color: rgba(0, 0, 0, 0.15);
+            }
+        }
+    }
+}
