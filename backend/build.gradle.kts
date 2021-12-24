@@ -55,7 +55,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/perfectdreams/gallery-of-dreams"
+        image = "ghcr.io/perfectdreams/galleryofdreams"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
