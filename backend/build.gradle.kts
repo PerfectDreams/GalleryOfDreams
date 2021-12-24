@@ -64,7 +64,10 @@ jib {
     }
 
     from {
-        image = "openjdk:17-slim-buster"
+        // This image comes from the "docker" folder Dockerfile!
+        // Don't forget to build the image before compiling GalleryOfDreams!
+        // https://github.com/GoogleContainerTools/jib/issues/1468
+        image = "tar://${File(rootDir, "docker/image.tar").absoluteFile}"
     }
 }
 
