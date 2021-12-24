@@ -71,10 +71,8 @@ fun FanArtOverview(
     }
 
     Div(attrs = classesAttrs("fan-art-name-and-artist")) {
-        FanArtArtistAvatar(data, artist, 64) {
+        FanArtArtistAvatar(data, artist, 64, 64, 64) {
             borderRadius(100.percent)
-            height(64.px)
-            width(64.px)
         }
 
         Div(attrs = classesAttrs("name-and-artist-wrapper")) {

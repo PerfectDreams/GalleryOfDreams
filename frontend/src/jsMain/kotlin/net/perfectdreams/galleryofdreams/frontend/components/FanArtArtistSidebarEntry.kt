@@ -39,10 +39,8 @@ fun FanArtArtistSidebarEntry(data: GalleryOfDreamsDataWrapper, fanArtArtist: Fan
                 }
             }
         ) {
-            FanArtArtistAvatar(data, fanArtArtist, 32) {
+            FanArtArtistAvatar(data, fanArtArtist, 32, 32, 32) {
                 borderRadius(100.percent)
-                height(32.px)
-                width(32.px)
             }
 
             Div(

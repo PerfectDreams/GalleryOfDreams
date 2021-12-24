@@ -73,10 +73,8 @@ fun FanArtCard(
                     }
 
                     Div(attrs = classesAttrs("fan-art-avatar-artist-and-date")) {
-                        FanArtArtistAvatar(data, artist, 32) {
+                        FanArtArtistAvatar(data, artist, 32, 32, 32) {
                             borderRadius(100.percent)
-                            height(32.px)
-                            width(32.px)
                         }
 
                         Div(classesAttrs("fan-art-artist-and-date")) {

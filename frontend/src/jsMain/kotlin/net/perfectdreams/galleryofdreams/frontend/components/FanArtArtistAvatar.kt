@@ -12,10 +12,14 @@ fun FanArtArtistAvatar(
     data: GalleryOfDreamsDataWrapper,
     fanArtArtist: FanArtArtist,
     imageSize: Int,
+    width: Int,
+    height: Int,
     builder: StyleBuilder.() -> (Unit)
 ) {
     Img(src = FanArtUtils.getArtistAvatarUrl(data, fanArtArtist, imageSize)) {
         attr("loading", "lazy")
+        attr("width", width.toString())
+        attr("height", height.toString())
 
         style {
             property("object-fit", "cover")
