@@ -60,10 +60,13 @@ class HackyServerSideRendering {
 
         // Load from cache if it is present
         val cached = pageCache[pathWithQueryParameters]
-        if (cached != null)
+        if (cached != null) {
+            logger.info { "Returning cached page for $pathWithQueryParameters..." }
             return cached
+        }
 
         try {
+            logger.info { "Taking permit to render page $pathWithQueryParameters... Currently available permits: ${renderingSemaphore.availablePermits}" }
             renderingSemaphore.withPermit {
                 val result = renderRootElementPageHTML(pathWithQueryParameters)
                 pageCache[pathWithQueryParameters] = result
@@ -76,7 +79,9 @@ class HackyServerSideRendering {
     }
 
     private fun renderRootElementPageHTML(pathWithQueryParameters: String): String {
+        logger.info { "Creating Playwright instance for $pathWithQueryParameters..." }
         Playwright.create().use { playwright ->
+            logger.info { "Launching Chromium instance for $pathWithQueryParameters..." }
             playwright.chromium().launch().use { browser ->
                 logger.info { "Preparing to load page $pathWithQueryParameters for Hacky SSR..." }
                 val context = browser.newContext()
