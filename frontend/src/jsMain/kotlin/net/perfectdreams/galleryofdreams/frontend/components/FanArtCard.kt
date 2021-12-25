@@ -39,7 +39,8 @@ fun FanArtCard(
 ) {
     val artist = data.artists.first { fanArt in it.fanArts }
 
-    A(
+    LocalizedA(
+        i18nContext,
         "/artists/${artist.slug}/${fanArt.slug}",
         attrs = {
             classes("fan-art-card")

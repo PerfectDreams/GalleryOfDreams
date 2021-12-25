@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
 import net.perfectdreams.galleryofdreams.frontend.utils.FanArtUtils
 import net.perfectdreams.galleryofdreams.frontend.utils.GalleryOfDreamsDataWrapper
+import net.perfectdreams.i18nhelper.core.I18nContext
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
@@ -27,8 +28,8 @@ import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-fun FanArtArtistSidebarEntry(data: GalleryOfDreamsDataWrapper, fanArtArtist: FanArtArtist) {
-    A("/artists/${fanArtArtist.slug}", attrs = { classes("entry") }) {
+fun FanArtArtistSidebarEntry(data: GalleryOfDreamsDataWrapper, i18nContext: I18nContext, fanArtArtist: FanArtArtist) {
+    LocalizedA(i18nContext, "/artists/${fanArtArtist.slug}", attrs = { classes("entry") }) {
         Div(
             attrs = {
                 style {

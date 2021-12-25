@@ -36,7 +36,7 @@ fun LeftSidebar(
             classes("is-closed")
     }) {
         Div(attrs = { classes("entries") }) {
-            A("/", attrs = {
+            LocalizedA(i18nContext, "/", attrs = {
                 classes("entry")
 
                 onClick {
@@ -160,7 +160,7 @@ fun LeftSidebar(
                             )
                         }
                     }) {
-                        FanArtArtistSidebarEntry(data, fanArtArtist)
+                        FanArtArtistSidebarEntry(data, i18nContext, fanArtArtist)
                     }
                 }
             } else {
