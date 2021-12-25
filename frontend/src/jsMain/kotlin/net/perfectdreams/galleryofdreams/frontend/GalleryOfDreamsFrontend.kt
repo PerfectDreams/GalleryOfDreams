@@ -51,8 +51,12 @@ class GalleryOfDreamsFrontend {
                     // Fade out the single page application loading wrapper...
                     spaLoadingWrapper?.addClass("loaded")
 
-                    if (routingManager.screenState == null)
-                        switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value)
+                    if (routingManager.screenState == null) {
+                        switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value, window.location.pathname)
+                        window.onpopstate = {
+                            switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value, it.state as String)
+                        }
+                    }
 
                     Div(attrs = { id("wrapper") }) {
                         LeftSidebar(this@GalleryOfDreamsFrontend, dataWrapper.value, i18nContext.value)
@@ -100,8 +104,12 @@ class GalleryOfDreamsFrontend {
         })
     }
 
-    private fun switchToProperScreenBasedOnPath(data: GalleryOfDreamsDataWrapper, i18nContext: I18nContext) {
-        val pathWithoutLocale = window.location.pathname
+    private fun switchToProperScreenBasedOnPath(
+        data: GalleryOfDreamsDataWrapper,
+        i18nContext: I18nContext,
+        path: String
+    ) {
+        val pathWithoutLocale = path
             .split("/")
             .drop(2)
             .joinToString("/")
