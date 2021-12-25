@@ -2,6 +2,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("net.perfectdreams.i18nhelper.plugin") version Versions.I18N_HELPER
+    id("maven-publish")
 }
 
 i18nHelper {
@@ -25,6 +26,20 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.1")
                 implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
+            }
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "PerfectDreams"
+            url = uri("https://repo.perfectdreams.net/")
+
+            credentials {
+                username = System.getProperty("USERNAME") ?: System.getenv("USERNAME")
+                password = System.getProperty("PASSWORD") ?: System.getenv("PASSWORD")
             }
         }
     }

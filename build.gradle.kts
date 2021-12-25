@@ -5,6 +5,9 @@ plugins {
 }
 
 allprojects {
+    group = "net.perfectdreams.galleryofdreams"
+    version = Versions.GALLERY_OF_DREAMS
+
     repositories {
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
