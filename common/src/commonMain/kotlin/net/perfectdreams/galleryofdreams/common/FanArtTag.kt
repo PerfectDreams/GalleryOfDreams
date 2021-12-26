@@ -14,4 +14,7 @@ enum class FanArtTag(
     LORITTA_CHRISTMAS_2018_EVENT(I18nKeysData.FanArtTags.LorittaChristmas2018Event),
     COMICS(I18nKeysData.FanArtTags.Comics),
     LORITTA_WEBSITE_ARTS(I18nKeysData.FanArtTags.LorittaWebsiteArts),
+    LORITTA(I18nKeysData.FanArtTags.Loritta),
+    PANTUFA(I18nKeysData.FanArtTags.Pantufa),
+    GABRIELA(I18nKeysData.FanArtTags.Gabriela)
 }
