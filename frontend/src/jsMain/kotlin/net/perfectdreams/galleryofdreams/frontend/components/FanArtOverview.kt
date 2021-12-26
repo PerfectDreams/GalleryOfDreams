@@ -51,7 +51,7 @@ fun FanArtOverview(
     val extension = MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)
     val fanArtUrl = "${data.dreamStorageServiceData.url}/${data.dreamStorageServiceData.namespace}/${StoragePaths.FanArt(fanArt.file).join()}.$extension"
 
-    LocalizedA(i18nContext, href = fanArtUrl, attrs = { attr("target", "_blank") }) {
+    A(href = fanArtUrl, attrs = { attr("target", "_blank") }) {
         Img(
             src = fanArtUrl,
             alt = fanArt.title ?: "",
