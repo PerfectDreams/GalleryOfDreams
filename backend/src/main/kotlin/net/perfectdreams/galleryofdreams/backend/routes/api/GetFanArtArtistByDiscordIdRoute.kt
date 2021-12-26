@@ -24,7 +24,7 @@ class GetFanArtArtistByDiscordIdRoute(private val m: GalleryOfDreamsBackend) : B
         val discordId = call.parameters.getOrFail("discordId").toLong()
 
         val artistData = m.transaction {
-            val discordConnectionArtistId = FanArtArtistDiscordConnections.select { FanArtArtistDiscordConnections.artist eq discordId }
+            val discordConnectionArtistId = FanArtArtistDiscordConnections.select { FanArtArtistDiscordConnections.discordId eq discordId }
                 .limit(1)
                 .firstOrNull() ?: return@transaction null
 
