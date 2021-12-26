@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
 import io.ktor.application.*
 import io.ktor.client.*
+import io.ktor.client.features.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -19,13 +20,18 @@ import net.perfectdreams.galleryofdreams.backend.plugins.configureRouting
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtArtistRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtsListRoute
-import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtsRoute
+import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtsRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetHomeRoute
-import net.perfectdreams.galleryofdreams.backend.routes.GetLanguageInfoRoute
-import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtistSocialConnections
+import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtArtistByDiscordIdRoute
+import net.perfectdreams.galleryofdreams.backend.routes.api.GetLanguageInfoRoute
+import net.perfectdreams.galleryofdreams.backend.routes.api.PostFanArtRoute
+import net.perfectdreams.galleryofdreams.backend.tables.AuthorizationTokens
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDeviantArtConnections
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
 import net.perfectdreams.galleryofdreams.backend.utils.HackyServerSideRendering
 import net.perfectdreams.galleryofdreams.backend.utils.LanguageManager
 import net.perfectdreams.galleryofdreams.backend.utils.WebsiteAssetsHashManager
@@ -36,8 +42,9 @@ import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.transaction
+import javax.print.attribute.standard.Compression
 
 class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     companion object {
@@ -45,12 +52,16 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     }
 
     val routes = listOf(
-        GetFanArtsRoute(this),
-        GetLanguageInfoRoute(this),
         GetHomeRoute(this),
         GetFanArtsListRoute(this),
         GetFanArtArtistRoute(this),
-        GetFanArtRoute(this)
+        GetFanArtRoute(this),
+
+        // ===[ API ]===
+        GetFanArtsRoute(this),
+        GetLanguageInfoRoute(this),
+        GetFanArtArtistByDiscordIdRoute(this),
+        PostFanArtRoute(this)
     )
 
     private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -67,6 +78,11 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     )
     val http = HttpClient {
         expectSuccess = false
+        install(HttpTimeout) {
+            this.requestTimeoutMillis = 120_000
+            this.connectTimeoutMillis = 120_000
+            this.socketTimeoutMillis = 120_000
+        }
     }
     val dreamStorageServiceClient = DreamStorageServiceClient(
         System.getenv("GALLERYOFDREAMS_DSS_URL"),
@@ -93,8 +109,11 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
                 SchemaUtils.createMissingTablesAndColumns(
                     FanArtArtists,
                     FanArts,
-                    FanArtArtistSocialConnections,
-                    FanArtTags
+                    FanArtTags,
+                    FanArtArtistDiscordConnections,
+                    FanArtArtistTwitterConnections,
+                    FanArtArtistDeviantArtConnections,
+                    AuthorizationTokens
                 )
             }
         }

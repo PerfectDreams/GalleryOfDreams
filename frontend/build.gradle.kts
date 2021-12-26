@@ -14,7 +14,8 @@ kotlin {
                 implementation(project(":common"))
                 implementation(compose.web.core)
                 implementation(compose.runtime)
-                implementation("io.ktor:ktor-client-js:1.6.7")
+
+                api("io.ktor:ktor-client-js:${Versions.KTOR}")
                 implementation("net.perfectdreams.i18nhelper.formatters:intl-messageformat-js:${Versions.I18N_HELPER}")
             }
         }

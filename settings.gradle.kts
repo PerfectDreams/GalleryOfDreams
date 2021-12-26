@@ -7,5 +7,6 @@ pluginManagement {
 }
 
 include(":common")
+include(":client")
 include(":backend")
 include(":frontend")

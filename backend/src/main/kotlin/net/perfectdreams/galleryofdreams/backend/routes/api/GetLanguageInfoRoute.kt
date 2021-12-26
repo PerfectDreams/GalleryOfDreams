@@ -1,4 +1,4 @@
-package net.perfectdreams.galleryofdreams.backend.routes
+package net.perfectdreams.galleryofdreams.backend.routes.api
 
 import io.ktor.application.*
 import io.ktor.response.*

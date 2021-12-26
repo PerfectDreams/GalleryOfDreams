@@ -1,18 +1,21 @@
-package net.perfectdreams.galleryofdreams.backend.routes
+package net.perfectdreams.galleryofdreams.backend.routes.api
 
 import io.ktor.application.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
-import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtistSocialConnections
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDeviantArtConnections
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.respondJson
+import net.perfectdreams.galleryofdreams.common.data.DeviantArtSocialConnection
+import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.DreamStorageServiceData
 import net.perfectdreams.galleryofdreams.common.data.FanArt
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
 import net.perfectdreams.galleryofdreams.common.data.GalleryOfDreamsDataResponse
+import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -24,8 +27,14 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
         call.respondJson(
             m.transaction {
                 val fanArtArtists = FanArtArtists.selectAll().map { fanArtArtist ->
-                    val socialNetworks = FanArtArtistSocialConnections.select {
-                        FanArtArtistSocialConnections.artist eq fanArtArtist[FanArtArtists.id]
+                    val discordSocialConnections = FanArtArtistDiscordConnections.select {
+                        FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id]
+                    }
+                    val twitterSocialConnections = FanArtArtistTwitterConnections.select {
+                        FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id]
+                    }
+                    val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
+                        FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id]
                     }
 
                     val fanArts = FanArts.select {
@@ -53,8 +62,12 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
                         fanArtArtist[FanArtArtists.name],
                         fanArts,
                         listOf(),
-                        socialNetworks.map {
-                            Json.decodeFromString(it[FanArtArtistSocialConnections.data])
+                        discordSocialConnections.map {
+                            DiscordSocialConnection(it[FanArtArtistDiscordConnections.discordId])
+                        } + twitterSocialConnections.map {
+                            TwitterSocialConnection(it[FanArtArtistTwitterConnections.handle])
+                        } + deviantArtSocialConnections.map {
+                            DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
                         }
                     )
                 }

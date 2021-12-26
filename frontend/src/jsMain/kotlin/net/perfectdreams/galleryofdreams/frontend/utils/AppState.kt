@@ -34,6 +34,8 @@ class AppState(private val m: GalleryOfDreamsFrontend)  {
 
         val jobs = listOf(
             GlobalScope.async {
+                // For some reason using the GalleryOfDreamsClient throws a weird exception in Ktor, probably related to DCE
+                // So let's just... not use that I guess
                 val response = Json.decodeFromString<GalleryOfDreamsDataResponse>(m.http.get<String>("$host/api/v1/fan-arts"))
                 this@AppState.galleryOfDreamsDataWrapper = State.Success(GalleryOfDreamsDataWrapper(response))
             },
