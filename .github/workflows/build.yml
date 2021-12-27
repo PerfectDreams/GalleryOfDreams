@@ -58,10 +58,10 @@ jobs:
       if: github.ref == 'refs/heads/main'
       uses: gradle/gradle-build-action@v2
       env:
-        USERNAME: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-        PASSWORD: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+        ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
       with:
-        arguments: "publish -DUSERNAME=$USERNAME -DPASSWORD=$PASSWORD"
+        arguments: "publish"
 
     - name: Publish to Docker
       uses: gradle/gradle-build-action@v2
