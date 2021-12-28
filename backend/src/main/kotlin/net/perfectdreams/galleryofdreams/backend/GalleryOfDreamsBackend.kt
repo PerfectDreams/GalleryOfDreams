@@ -24,6 +24,7 @@ import net.perfectdreams.galleryofdreams.backend.routes.GetHomeRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtArtistByDiscordIdRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtsRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetLanguageInfoRoute
+import net.perfectdreams.galleryofdreams.backend.routes.api.PostCheckFanArtRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.PostFanArtRoute
 import net.perfectdreams.galleryofdreams.backend.tables.AuthorizationTokens
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists
@@ -61,7 +62,8 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         GetFanArtsRoute(this),
         GetLanguageInfoRoute(this),
         GetFanArtArtistByDiscordIdRoute(this),
-        PostFanArtRoute(this)
+        PostFanArtRoute(this),
+        PostCheckFanArtRoute(this)
     )
 
     private val DRIVER_CLASS_NAME = "org.postgresql.Driver"

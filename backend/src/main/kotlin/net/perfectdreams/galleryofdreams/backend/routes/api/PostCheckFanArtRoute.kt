@@ -18,7 +18,7 @@ import net.perfectdreams.galleryofdreams.common.data.api.FanArtDoesNotExistRespo
 import net.perfectdreams.galleryofdreams.common.data.api.FanArtExistsResponse
 import org.jetbrains.exposed.sql.select
 
-class CheckFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/fan-arts/check") {
+class PostCheckFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/fan-arts/check") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, token: AuthorizationToken) {
         val response = withContext(Dispatchers.IO) {
             // Receive the uploaded file
