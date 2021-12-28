@@ -46,5 +46,7 @@ class RoutingManager(private val m: GalleryOfDreamsFrontend) {
         // Title is unused
         // https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
         window.history.pushState(newPath, "", newPath)
+        gtagSafe("set", "page_path", newPath)
+        gtagSafe("event", "page_view")
     }
 }
