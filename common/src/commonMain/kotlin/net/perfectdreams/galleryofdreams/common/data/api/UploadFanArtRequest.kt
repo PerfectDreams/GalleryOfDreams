@@ -1,4 +1,4 @@
-package net.perfectdreams.galleryofdreams.common.data
+package net.perfectdreams.galleryofdreams.common.data.api
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable

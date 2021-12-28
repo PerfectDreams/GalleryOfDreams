@@ -9,9 +9,10 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
-import net.perfectdreams.galleryofdreams.common.data.GalleryOfDreamsDataResponse
-import net.perfectdreams.galleryofdreams.common.data.UploadFanArtRequest
-import net.perfectdreams.galleryofdreams.common.data.UploadFanArtResponse
+import net.perfectdreams.galleryofdreams.common.data.api.CheckFanArtResponse
+import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
+import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtRequest
+import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtResponse
 
 class GalleryOfDreamsClient(
     baseUrl: String,
@@ -20,17 +21,23 @@ class GalleryOfDreamsClient(
 ) {
     companion object {
         private const val apiVersion = "v1"
+
+        // To avoid the client crashing due to additional fields that aren't mapped, let's ignore unknown keys
+        // This is useful if we want to add new information but we don't want older clients to crash
+        private val json = Json {
+            ignoreUnknownKeys = true
+        }
     }
     val baseUrl = baseUrl.removeSuffix("/") // Remove trailing slash
 
-    suspend fun uploadImage(
+    suspend fun uploadFanArt(
         artistId: Long,
         data: ByteArray,
         mimeType: ContentType,
         request: UploadFanArtRequest
     ): UploadFanArtResponse {
         val parts = formData {
-            append("attributes", Json.encodeToString(request))
+            append("attributes", json.encodeToString(request))
 
             append(
                 "file",
@@ -47,7 +54,30 @@ class GalleryOfDreamsClient(
             addAuthorizationTokenIfPresent(true)
         }
 
-        return Json.decodeFromString(response.readText())
+        return json.decodeFromString(response.readText())
+    }
+
+    suspend fun checkFanArt(
+        data: ByteArray,
+        mimeType: ContentType,
+    ): CheckFanArtResponse {
+        val parts = formData {
+            append(
+                "file",
+                data,
+                Headers.build {
+                    append(HttpHeaders.ContentType, mimeType.toString())
+                    append(HttpHeaders.ContentDisposition, "filename=file") // This needs to be present for it to be recognized as a FileItem!
+                }
+            )
+        }
+
+        val response = http.submitFormWithBinaryData<HttpResponse>("${baseUrl}/api/$apiVersion/fan-arts/check", formData = parts) {
+            this.method = HttpMethod.Post
+            addAuthorizationTokenIfPresent(true)
+        }
+
+        return json.decodeFromString(response.readText())
     }
 
     // ===[ FAN ARTS ]===
@@ -56,7 +86,7 @@ class GalleryOfDreamsClient(
             addAuthorizationTokenIfPresent(false)
         }
 
-        return Json.decodeFromString(response.readText())
+        return json.decodeFromString(response.readText())
     }
 
     // ===[ ARTISTS ]===
@@ -68,7 +98,7 @@ class GalleryOfDreamsClient(
         if (response.status == HttpStatusCode.NotFound)
             return null
 
-        return Json.decodeFromString(response.readText())
+        return json.decodeFromString(response.readText())
     }
 
     private fun HttpRequestBuilder.addAuthorizationTokenIfPresent(fatalIfNotPresent: Boolean) {

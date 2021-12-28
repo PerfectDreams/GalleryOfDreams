@@ -20,9 +20,9 @@ import net.perfectdreams.galleryofdreams.backend.plugins.configureRouting
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtArtistRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtsListRoute
-import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtsRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetHomeRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtArtistByDiscordIdRoute
+import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtsRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetLanguageInfoRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.PostFanArtRoute
 import net.perfectdreams.galleryofdreams.backend.tables.AuthorizationTokens
@@ -44,7 +44,7 @@ import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import javax.print.attribute.standard.Compression
+import org.jetbrains.exposed.sql.update
 
 class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     companion object {
@@ -115,6 +115,16 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
                     FanArtArtistDeviantArtConnections,
                     AuthorizationTokens
                 )
+
+                val imageLinks = dreamStorageServiceClient.getImageLinks()
+
+                FanArts.selectAll().forEach { fanArt ->
+                    FanArts.update({ FanArts.id eq fanArt[FanArts.id] }) {
+                        it[FanArts.dreamStorageServiceImageId] = imageLinks.first {
+                            it.folder == "fan-arts" && it.file == fanArt[FanArts.file]
+                        }.imageId
+                    }
+                }
             }
         }
 

@@ -1,40 +1,25 @@
 package net.perfectdreams.galleryofdreams.backend.routes.api
 
 import io.ktor.application.*
-import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.http.contentType
 import io.ktor.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.dreamstorageservice.data.CreateImageLinkRequest
-import net.perfectdreams.dreamstorageservice.data.UploadImageRequest
+import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
+import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.routes.RequiresAPIAuthenticationRoute
-import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
-import net.perfectdreams.galleryofdreams.backend.tables.FanArts.createdAt
-import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDeviantArtConnections
-import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
-import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
 import net.perfectdreams.galleryofdreams.backend.utils.AuthorizationToken
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.respondJson
-import net.perfectdreams.galleryofdreams.common.FanArtTag
-import net.perfectdreams.galleryofdreams.common.data.DeviantArtSocialConnection
-import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.FanArt
-import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
-import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
-import net.perfectdreams.galleryofdreams.common.data.UploadFanArtRequest
-import net.perfectdreams.galleryofdreams.common.data.UploadFanArtResponse
-import net.perfectdreams.sequins.ktor.BaseRoute
+import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtRequest
+import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtResponse
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import java.util.*
 
 class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/artists/{artistId}/fan-arts") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, token: AuthorizationToken) {
@@ -61,7 +46,7 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
 
             val r = m.dreamStorageServiceClient.createImageLink(
                 CreateImageLinkRequest(
-                    uploadResult.imageId,
+                    uploadResult.info.imageId,
                     "fan-arts",
                     "%s"
                 )
@@ -74,7 +59,8 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
                     it[FanArts.description] = attributes.description
                     it[FanArts.artist] = artistId
                     it[FanArts.createdAt] = attributes.createdAt
-                    it[FanArts.file] = r.file
+                    it[FanArts.dreamStorageServiceImageId] = uploadResult.info.imageId
+                    it[FanArts.file] = r.link.file
                     it[FanArts.preferredMediaType] = contentType.toString()
                 }
 
@@ -95,6 +81,7 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
                     fanArt[FanArts.title],
                     fanArt[FanArts.description],
                     fanArt[FanArts.createdAt],
+                    fanArt[FanArts.dreamStorageServiceImageId] ?: -1,
                     fanArt[FanArts.file],
                     fanArt[FanArts.preferredMediaType],
                     tags.map {

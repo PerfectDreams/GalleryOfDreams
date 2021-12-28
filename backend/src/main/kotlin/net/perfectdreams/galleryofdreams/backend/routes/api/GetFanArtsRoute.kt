@@ -14,7 +14,7 @@ import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.DreamStorageServiceData
 import net.perfectdreams.galleryofdreams.common.data.FanArt
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
-import net.perfectdreams.galleryofdreams.common.data.GalleryOfDreamsDataResponse
+import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.select
@@ -46,6 +46,7 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
                             it[FanArts.title],
                             it[FanArts.description],
                             it[FanArts.createdAt],
+                            it[FanArts.dreamStorageServiceImageId] ?: -1,
                             it[FanArts.file],
                             it[FanArts.preferredMediaType],
                             FanArtTags.select {

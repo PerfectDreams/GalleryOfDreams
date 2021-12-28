@@ -12,6 +12,7 @@ data class FanArt(
     val title: String?,
     val description: String?,
     val createdAt: Instant,
+    val dreamStorageServiceImageId: Long,
     val file: String,
     val preferredMediaType: String,
     val tags: List<FanArtTag>

@@ -9,6 +9,7 @@ object FanArts : LongIdTable() {
     val title = text("title").nullable()
     val description = text("description").nullable()
     val createdAt = timestamp("created_at")
+    val dreamStorageServiceImageId = long("dreamstorageservice_image_id").nullable()
     val file = text("file")
     val preferredMediaType = text("preferred_media_type")
 }

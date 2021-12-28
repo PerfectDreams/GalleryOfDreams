@@ -25,7 +25,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.3.1")
     implementation("com.zaxxer:HikariCP:5.0.0")
     implementation("io.github.microutils:kotlin-logging:2.1.16")
-    implementation("net.perfectdreams.dreamstorageservice:client:0.0.1-SNAPSHOT")
+    implementation("net.perfectdreams.dreamstorageservice:client:2.0.0-SNAPSHOT")
     implementation("pw.forst", "exposed-upsert", "1.1.0")
 
     // Caching
