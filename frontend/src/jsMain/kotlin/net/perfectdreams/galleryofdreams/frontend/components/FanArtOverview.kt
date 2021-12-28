@@ -65,6 +65,7 @@ fun FanArtOverview(
                     display(DisplayStyle.Block)
                     property("margin-left", "auto")
                     property("margin-right", "auto")
+                    property("object-fit", "contain")
                 }
             }
         )
