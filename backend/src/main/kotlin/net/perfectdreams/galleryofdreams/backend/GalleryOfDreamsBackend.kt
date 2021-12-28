@@ -117,16 +117,6 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
                     FanArtArtistDeviantArtConnections,
                     AuthorizationTokens
                 )
-
-                val imageLinks = dreamStorageServiceClient.getImageLinks()
-
-                FanArts.selectAll().forEach { fanArt ->
-                    FanArts.update({ FanArts.id eq fanArt[FanArts.id] }) {
-                        it[FanArts.dreamStorageServiceImageId] = imageLinks.first {
-                            it.folder == "fan-arts" && it.file == fanArt[FanArts.file]
-                        }.imageId
-                    }
-                }
             }
         }
 

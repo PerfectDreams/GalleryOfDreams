@@ -81,7 +81,7 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
                     fanArt[FanArts.title],
                     fanArt[FanArts.description],
                     fanArt[FanArts.createdAt],
-                    fanArt[FanArts.dreamStorageServiceImageId] ?: -1,
+                    fanArt[FanArts.dreamStorageServiceImageId],
                     fanArt[FanArts.file],
                     fanArt[FanArts.preferredMediaType],
                     tags.map {

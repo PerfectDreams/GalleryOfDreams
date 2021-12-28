@@ -52,7 +52,7 @@ class GetFanArtArtistByDiscordIdRoute(private val m: GalleryOfDreamsBackend) : B
                     it[FanArts.title],
                     it[FanArts.description],
                     it[FanArts.createdAt],
-                    it[FanArts.dreamStorageServiceImageId] ?: -1,
+                    it[FanArts.dreamStorageServiceImageId],
                     it[FanArts.file],
                     it[FanArts.preferredMediaType],
                     FanArtTags.select {

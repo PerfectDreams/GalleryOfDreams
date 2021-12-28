@@ -46,7 +46,7 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
                             it[FanArts.title],
                             it[FanArts.description],
                             it[FanArts.createdAt],
-                            it[FanArts.dreamStorageServiceImageId] ?: -1,
+                            it[FanArts.dreamStorageServiceImageId],
                             it[FanArts.file],
                             it[FanArts.preferredMediaType],
                             FanArtTags.select {
