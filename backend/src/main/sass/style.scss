@@ -248,9 +248,15 @@ aside#left-sidebar {
 section#right-sidebar {    
     padding-left: 1em;
     padding-right: 1em;
-    height: 100vh;
     overflow: auto;
     width: 100%;
+    // 50px = Navbar
+    height: calc(100vh - 50px);
+
+    // We don't need to reserve the 50px if we aren't showing the navbar!
+    @include bp('medium') {
+        height: 100vh;
+    }
 
     >.content {
         width: 100%;
