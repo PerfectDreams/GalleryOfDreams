@@ -8,8 +8,8 @@
     overflow: hidden;
     border-radius: 7px;
     background: var(--loritta-blue);
-    width: 192px;
-    height: 192px;
+    width: 100%;
+    aspect-ratio: 1/1;
 
     >.fan-art-info-card {
         opacity: 0;
@@ -77,6 +77,11 @@
         }
 
         &:hover {
+            opacity: 1;
+        }
+
+        // Using touch device, keep all fan art information visible by default
+        @media (hover: none) and (pointer: coarse) {
             opacity: 1;
         }
     }
