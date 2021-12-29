@@ -40,8 +40,8 @@ fun FanArtCardsGrid(
         Div(attrs = {
             style {
                 display(DisplayStyle.Grid)
-                gridTemplateColumns("repeat(auto-fit, minmax(192px, 1fr))")
-                gridTemplateRows("repeat(auto-fit, minmax(192px, 1fr))")
+                gridTemplateColumns("repeat(auto-fill, minmax(192px, 1fr))")
+                gridTemplateRows("repeat(auto-fill, minmax(192px, 1fr))")
                 gap(1.em)
                 justifyContent(JustifyContent.SpaceBetween)
                 width(100.percent)
