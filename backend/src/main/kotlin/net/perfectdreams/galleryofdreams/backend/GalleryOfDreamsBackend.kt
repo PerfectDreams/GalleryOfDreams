@@ -158,9 +158,6 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
 
         Runtime.getRuntime().addShutdownHook(
             thread(false) {
-                hackySSR.playwrightContext.close()
-                hackySSR.playwrightBrowser.close()
-                hackySSR.playwright.close()
                 server.stop(15_000L, 15_000L)
             }
         )

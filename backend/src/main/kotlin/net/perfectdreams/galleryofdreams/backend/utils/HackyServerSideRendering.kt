@@ -78,7 +78,7 @@ class HackyServerSideRendering {
                 val start = System.currentTimeMillis()
                 val result = renderRootElementPageHTML(pathWithQueryParameters)
                 pageCache[pathWithQueryParameters] = result
-                logger.error { "(User-Agent: ${call.request.userAgent()}) Successfully rendered $pathWithQueryParameters page in ${System.currentTimeMillis() - start}ms! Let's party!!" }
+                logger.info { "(User-Agent: ${call.request.userAgent()}) Successfully rendered $pathWithQueryParameters page in ${System.currentTimeMillis() - start}ms! Let's party!!" }
                 return result
             }
         } catch (e: BrowserRenderTookTooLong) {
@@ -88,39 +88,40 @@ class HackyServerSideRendering {
     }
 
     private fun renderRootElementPageHTML(pathWithQueryParameters: String): String {
-        logger.info { "Preparing to load page $pathWithQueryParameters for Hacky SSR..." }
+        Playwright.create().use {
+            val playwrightChromium = it.chromium().launch()
 
-        playwrightContext.setExtraHTTPHeaders(mapOf(SKIP_SSR_HEADER to "true"))
-        playwrightContext.newPage().use { page ->
-            page.navigate(
-                "http://127.0.0.1:${
-                    System.getenv("GALLERYOFDREAMS_WEBSERVER_PORT")?.toIntOrNull() ?: 8080
-                }$pathWithQueryParameters"
-            )
+            logger.info { "Preparing to load page $pathWithQueryParameters for Hacky SSR..." }
 
-            var start = System.currentTimeMillis()
+            playwrightContext.setExtraHTTPHeaders(mapOf(SKIP_SSR_HEADER to "true"))
+            playwrightContext.newPage().use { page ->
+                page.navigate(
+                    "http://127.0.0.1:${
+                        System.getenv("GALLERYOFDREAMS_WEBSERVER_PORT")?.toIntOrNull() ?: 8080
+                    }$pathWithQueryParameters"
+                )
 
-            while (true) {
-                if (System.currentTimeMillis() - start >= 5_000)
-                    throw BrowserRenderTookTooLong()
+                var start = System.currentTimeMillis()
 
-                val test = page.evaluate("window.composePageIsReady")
-                if (test is Boolean && test)
-                    break
+                while (true) {
+                    if (System.currentTimeMillis() - start >= 5_000)
+                        throw BrowserRenderTookTooLong()
 
-                logger.info { "Waiting for $pathWithQueryParameters compose page is ready check... Elapsed: ${System.currentTimeMillis() - start}ms" }
-                Thread.sleep(100)
+                    val test = page.evaluate("window.composePageIsReady")
+                    if (test is Boolean && test)
+                        break
+
+                    logger.info { "Waiting for $pathWithQueryParameters compose page is ready check... Elapsed: ${System.currentTimeMillis() - start}ms" }
+                    page.waitForTimeout(100.0)
+                }
+
+                logger.info { "Took ${System.currentTimeMillis() - start}ms to wait for Compose Page is Ready $pathWithQueryParameters variable! " }
+                start = System.currentTimeMillis()
+                val innerHTML = page.locator("#root").innerHTML()
+                logger.info { "Took ${System.currentTimeMillis() - start}ms to query root @ \"$pathWithQueryParameters\"'s innerHTML page!" }
+
+                return innerHTML
             }
-
-            logger.info { "Took ${System.currentTimeMillis() - start}ms to wait for Compose Page is Ready $pathWithQueryParameters variable! " }
-            start = System.currentTimeMillis()
-            val innerHTML = page.locator("#root").innerHTML()
-            logger.info { "Took ${System.currentTimeMillis() - start}ms to query root @ \"$pathWithQueryParameters\"'s innerHTML page!" }
-            start = System.currentTimeMillis()
-            pageCache[pathWithQueryParameters] = innerHTML
-            logger.info { "Took ${System.currentTimeMillis() - start}ms to cache root @ \"$pathWithQueryParameters\"'s innerHTML page!" }
-
-            return innerHTML
         }
     }
 
