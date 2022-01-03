@@ -47,6 +47,9 @@ class HackyServerSideRendering {
             return ""
     }
 
+    val playwright = Playwright.create()
+    val playwrightBrowser = playwright.chromium().launch()
+
     suspend fun getOrRenderRootElementPageHTML(call: ApplicationCall): String {
         if (call.request.header(SKIP_SSR_HEADER) != null)
             return ""
@@ -79,40 +82,34 @@ class HackyServerSideRendering {
     }
 
     private fun renderRootElementPageHTML(pathWithQueryParameters: String): String {
-        logger.info { "Creating Playwright instance for $pathWithQueryParameters..." }
-        Playwright.create().use { playwright ->
-            logger.info { "Launching Chromium instance for $pathWithQueryParameters..." }
-            playwright.chromium().launch().use { browser ->
-                logger.info { "Preparing to load page $pathWithQueryParameters for Hacky SSR..." }
-                val context = browser.newContext()
-                context.setExtraHTTPHeaders(mapOf(SKIP_SSR_HEADER to "true"))
-                val page: Page = context.newPage()
+        logger.info { "Preparing to load page $pathWithQueryParameters for Hacky SSR..." }
+        val context = playwrightBrowser.newContext()
+        context.setExtraHTTPHeaders(mapOf(SKIP_SSR_HEADER to "true"))
+        val page: Page = context.newPage()
 
-                page.navigate("http://127.0.0.1:${System.getenv("GALLERYOFDREAMS_WEBSERVER_URL")?.toIntOrNull() ?: 8080}$pathWithQueryParameters")
+        page.navigate("http://127.0.0.1:${System.getenv("GALLERYOFDREAMS_WEBSERVER_URL")?.toIntOrNull() ?: 8080}$pathWithQueryParameters")
 
-                val start = System.currentTimeMillis()
+        val start = System.currentTimeMillis()
 
-                while (true) {
-                    if (System.currentTimeMillis() - start >= 5_000)
-                        throw BrowserRenderTookTooLong()
+        while (true) {
+            if (System.currentTimeMillis() - start >= 5_000)
+                throw BrowserRenderTookTooLong()
 
-                    val test = page.evaluate("window.composePageIsReady")
-                    if (test is Boolean && test)
-                        break
+            val test = page.evaluate("window.composePageIsReady")
+            if (test is Boolean && test)
+                break
 
-                    logger.info { "Waiting for $pathWithQueryParameters compose page is ready check... Elapsed: ${System.currentTimeMillis() - start}ms" }
-                    Thread.sleep(100)
-                }
-
-                logger.info { "Successfully loaded $pathWithQueryParameters page!" }
-                val innerHTML = page.querySelector("#root").innerHTML()
-                pageCache[pathWithQueryParameters] = page.querySelector("#root").innerHTML()
-
-                // page.screenshot(Page.ScreenshotOptions().setPath(Paths.get("screenshot-${pathWithQueryParameters.replace("/", "-").replace("?", "-").replace("&", "-")}.png")))
-
-                return innerHTML
-            }
+            logger.info { "Waiting for $pathWithQueryParameters compose page is ready check... Elapsed: ${System.currentTimeMillis() - start}ms" }
+            Thread.sleep(100)
         }
+
+        logger.info { "Successfully loaded $pathWithQueryParameters page!" }
+        val innerHTML = page.querySelector("#root").innerHTML()
+        pageCache[pathWithQueryParameters] = page.querySelector("#root").innerHTML()
+
+        // page.screenshot(Page.ScreenshotOptions().setPath(Paths.get("screenshot-${pathWithQueryParameters.replace("/", "-").replace("?", "-").replace("&", "-")}.png")))
+
+        return innerHTML
     }
 
     class BrowserRenderTookTooLong : RuntimeException()

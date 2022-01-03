@@ -43,9 +43,8 @@ import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.update
+import kotlin.concurrent.thread
 
 class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     companion object {
@@ -120,7 +119,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
             }
         }
 
-        embeddedServer(Netty, port = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL")?.toIntOrNull() ?: 8080) {
+        val server = embeddedServer(Netty, port = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL")?.toIntOrNull() ?: 8080) {
             install(CORS) {
                 anyHost()
             }
@@ -156,6 +155,14 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
 
             configureRouting(this@GalleryOfDreamsBackend, routes)
         }.start(wait = true)
+
+        Runtime.getRuntime().addShutdownHook(
+            thread(false) {
+                hackySSR.playwrightBrowser.close()
+                hackySSR.playwright.close()
+                server.stop(15_000L, 15_000L)
+            }
+        )
     }
 
     fun createPostgreSQLHikari(address: String, databaseName: String, username: String, password: String): HikariConfig {
