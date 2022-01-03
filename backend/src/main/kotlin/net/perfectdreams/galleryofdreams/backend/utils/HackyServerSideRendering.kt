@@ -98,7 +98,7 @@ class HackyServerSideRendering {
                 }$pathWithQueryParameters"
             )
 
-            val start = System.currentTimeMillis()
+            var start = System.currentTimeMillis()
 
             while (true) {
                 if (System.currentTimeMillis() - start >= 5_000)
@@ -112,9 +112,13 @@ class HackyServerSideRendering {
                 Thread.sleep(100)
             }
 
-            logger.info { "Successfully loaded $pathWithQueryParameters page!" }
-            val innerHTML = page.querySelector("#root").innerHTML()
-            pageCache[pathWithQueryParameters] = page.querySelector("#root").innerHTML()
+            logger.info { "Took ${System.currentTimeMillis() - start}ms to wait for Compose Page is Ready $pathWithQueryParameters variable! " }
+            start = System.currentTimeMillis()
+            val innerHTML = page.locator("#root").innerHTML()
+            logger.info { "Took ${System.currentTimeMillis() - start}ms to query root @ \"$pathWithQueryParameters\"'s innerHTML page!" }
+            start = System.currentTimeMillis()
+            pageCache[pathWithQueryParameters] = innerHTML
+            logger.info { "Took ${System.currentTimeMillis() - start}ms to cache root @ \"$pathWithQueryParameters\"'s innerHTML page!" }
 
             return innerHTML
         }
