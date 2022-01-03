@@ -68,19 +68,21 @@ class HackyServerSideRendering {
         // Load from cache if it is present
         val cached = pageCache[pathWithQueryParameters]
         if (cached != null) {
-            logger.info { "Returning cached page for $pathWithQueryParameters..." }
+            logger.info { "(User-Agent: ${call.request.userAgent()}) Returning cached page for $pathWithQueryParameters..." }
             return cached
         }
 
         try {
-            logger.info { "Taking permit to render page $pathWithQueryParameters... Currently available permits: ${renderingSemaphore.availablePermits}" }
+            logger.info { "(User-Agent: ${call.request.userAgent()}) Taking permit to render page $pathWithQueryParameters... Currently available permits: ${renderingSemaphore.availablePermits}" }
             renderingSemaphore.withPermit {
+                val start = System.currentTimeMillis()
                 val result = renderRootElementPageHTML(pathWithQueryParameters)
                 pageCache[pathWithQueryParameters] = result
+                logger.error { "(User-Agent: ${call.request.userAgent()}) Successfully rendered $pathWithQueryParameters page in ${System.currentTimeMillis() - start}ms! Let's party!!" }
                 return result
             }
         } catch (e: BrowserRenderTookTooLong) {
-            logger.error { "Page render for $pathWithQueryParameters took more than 5000ms! We are going to provide an empty string for the request..." }
+            logger.error { "(User-Agent: ${call.request.userAgent()}) Page render for $pathWithQueryParameters took more than 5000ms! We are going to provide an empty string for the request..." }
             return ""
         }
     }
