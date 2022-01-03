@@ -94,7 +94,7 @@ class HackyServerSideRendering {
         playwrightContext.newPage().use { page ->
             page.navigate(
                 "http://127.0.0.1:${
-                    System.getenv("GALLERYOFDREAMS_WEBSERVER_URL")?.toIntOrNull() ?: 8080
+                    System.getenv("GALLERYOFDREAMS_WEBSERVER_PORT")?.toIntOrNull() ?: 8080
                 }$pathWithQueryParameters"
             )
 

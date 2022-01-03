@@ -119,7 +119,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
             }
         }
 
-        val server = embeddedServer(Netty, port = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL")?.toIntOrNull() ?: 8080) {
+        val server = embeddedServer(Netty, port = System.getenv("GALLERYOFDREAMS_WEBSERVER_PORT")?.toIntOrNull() ?: 8080) {
             install(CORS) {
                 anyHost()
             }
