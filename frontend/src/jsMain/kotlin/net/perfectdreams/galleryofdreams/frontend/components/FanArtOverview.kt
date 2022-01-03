@@ -54,7 +54,7 @@ fun FanArtOverview(
     A(href = fanArtUrl, attrs = { attr("target", "_blank") }) {
         Img(
             src = fanArtUrl,
-            alt = fanArt.title ?: "",
+            alt = fanArt.title ?: i18nContext.get(I18nKeysData.FanArtBy(artist.name)),
             attrs = {
                 attr("loading", "lazy")
 
