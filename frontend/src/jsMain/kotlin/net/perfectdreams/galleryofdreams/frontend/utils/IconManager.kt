@@ -17,6 +17,8 @@ object IconManager {
     val cake = registerSVGIcon("cake", svgCake)
     val santaClaus = registerSVGIcon("santa-claus", svgSantaClaus)
     val speechBubble = registerSVGIcon("speech-bubble", svgSpeechBubble)
+    val pumpkin = registerSVGIcon("pumpkin", svgPumpkin)
+    val womanDancing = registerSVGIcon("woman-dancing", svgWomanDancing)
     val bars = registerSVGIcon("bars", svgBars, SVGOptions.ADD_CURRENT_COLOR_FILLS)
     val times = registerSVGIcon("times", svgTimes, SVGOptions.ADD_CURRENT_COLOR_FILLS)
     val chevronLeft = registerSVGIcon("chevron-left", svgChevronLeft, SVGOptions.ADD_CURRENT_COLOR_FILLS)
@@ -148,6 +150,14 @@ external val svgCake: dynamic
 @JsModule("./icons/twemoji/1f385.svg")
 @JsNonModule
 external val svgSantaClaus: dynamic
+
+@JsModule("./icons/twemoji/1f383.svg")
+@JsNonModule
+external val svgPumpkin: dynamic
+
+@JsModule("./icons/twemoji/1f483.svg")
+@JsNonModule
+external val svgWomanDancing: dynamic
 
 @JsModule("./icons/twemoji/1f4ac.svg")
 @JsNonModule
