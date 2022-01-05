@@ -5,6 +5,7 @@ import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -93,6 +94,10 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
 
         // If a new fan art was added, we will purge all the prerendered HTML from our cache!
         m.hackySSR.pageCache.clear()
+        m.hackySSR.languageBrowsers.forEach { (_, value) ->
+            value.invalidateBrowser()
+        }
+        m.hackySSR.languageBrowsers.clear()
 
         call.respondJson(response)
     }

@@ -6,6 +6,7 @@ import kotlinx.browser.window
 import kotlinx.dom.addClass
 import kotlinx.dom.clear
 import net.perfectdreams.galleryofdreams.common.FanArtTag
+import net.perfectdreams.galleryofdreams.frontend.GalleryOfDreamsFrontend.Companion.INSTANCE
 import net.perfectdreams.galleryofdreams.frontend.components.FanArtOverview
 import net.perfectdreams.galleryofdreams.frontend.components.FanArtsArtistOverview
 import net.perfectdreams.galleryofdreams.frontend.components.FanArtsOverview
@@ -23,9 +24,15 @@ import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.asList
+import org.w3c.dom.url.URL
 import org.w3c.dom.url.URLSearchParams
 
 class GalleryOfDreamsFrontend {
+    companion object {
+        // THIS SHOULDN'T BE USED BECAUSE THIS IS A HACK FOR HACKY SSR!!
+        lateinit var INSTANCE: GalleryOfDreamsFrontend
+    }
+
     val root by lazy { document.getElementById("root") as HTMLDivElement? }
     val spaLoadingWrapper by lazy { document.getElementById("spa-loading-wrapper") as HTMLDivElement? }
     val appState = AppState(this)
@@ -35,6 +42,8 @@ class GalleryOfDreamsFrontend {
     }
 
     fun start() {
+        INSTANCE = this
+
         appState.loadData()
 
         document.addEventListener("DOMContentLoaded", {
@@ -89,33 +98,35 @@ class GalleryOfDreamsFrontend {
                                 )
                             }
                         }
+                    }
 
-                        // Used to render pages on the backend using playwright, this is kinda a hacky workaround ngl but it should work!
-                        window.asDynamic()["composePageIsReady"] = true
+                    // Used to render pages on the backend using playwright, this is kinda a hacky workaround ngl but it should work!
+                    window.asDynamic()["composePageIsReady"] = true
 
-                        // Clean up the mess made by the hacky SSR
-                        domGeneratedByHackySSR?.forEach {
-                            console.log(it)
-                            it.remove()
-                        }
+                    // Clean up the mess made by the hacky SSR
+                    domGeneratedByHackySSR?.forEach {
+                        console.log(it)
+                        it.remove()
                     }
                 }
             }
         })
     }
 
-    private fun switchToProperScreenBasedOnPath(
+    internal fun switchToProperScreenBasedOnPath(
         data: GalleryOfDreamsDataWrapper,
         i18nContext: I18nContext,
         path: String
     ) {
-        val pathWithoutLocale = path
+        val url = URL("http://127.0.0.1$path")
+
+        val pathWithoutLocale = url.pathname
             .split("/")
             .drop(2)
             .joinToString("/")
             .let { "/$it" }
 
-        val queryParams = URLSearchParams(window.location.search)
+        val queryParams = url.searchParams
 
         if (pathWithoutLocale == "/") {
             routingManager.switchToHomeOverview(i18nContext)
@@ -151,3 +162,11 @@ class GalleryOfDreamsFrontend {
         }
     }
 }
+
+@JsName("switchToProperScreenBasedOnPathHackySSR")
+@JsExport
+fun switchToProperScreenBasedOnPathHackySSR(path: String) = INSTANCE.switchToProperScreenBasedOnPath(
+    (INSTANCE.appState.galleryOfDreamsDataWrapper as State.Success).value,
+    (INSTANCE.appState.i18nContext as State.Success).value,
+    path
+)

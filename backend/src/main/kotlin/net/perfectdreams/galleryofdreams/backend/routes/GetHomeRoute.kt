@@ -10,7 +10,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 
 class GetHomeRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/") {
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
-        val cachedRootHTML = withContext(Dispatchers.IO) { m.hackySSR.getOrRenderRootElementPageHTMLForCrawlers(call) }
+        val cachedRootHTML = withContext(Dispatchers.IO) { m.hackySSR.getOrRenderRootElementPageHTMLForCrawlers(call, i18nContext) }
         call.respondHtml(
             block = galleryOfDreamsSpaHtml(
                 m,

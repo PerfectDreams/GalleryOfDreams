@@ -23,7 +23,7 @@ import org.jetbrains.exposed.sql.select
 
 class GetFanArtRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{artistSlug}/{fanArtSlug}") {
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
-        val cachedRootHTML = withContext(Dispatchers.IO) { m.hackySSR.getOrRenderRootElementPageHTMLForCrawlers(call) }
+        val cachedRootHTML = withContext(Dispatchers.IO) { m.hackySSR.getOrRenderRootElementPageHTMLForCrawlers(call, i18nContext) }
         val fanArtData = m.transaction {
             FanArts.innerJoin(FanArtArtists)
                 .select { FanArtArtists.slug eq call.parameters.getOrFail("artistSlug") and (FanArts.slug eq call.parameters.getOrFail("fanArtSlug")) }

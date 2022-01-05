@@ -14,6 +14,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.galleryofdreams.backend.plugins.configureRouting
@@ -39,6 +40,7 @@ import net.perfectdreams.galleryofdreams.backend.utils.LanguageManager
 import net.perfectdreams.galleryofdreams.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.galleryofdreams.common.FanArtTag
+import org.checkerframework.checker.units.qual.m
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
@@ -102,7 +104,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         ContentType.Video.Any
     )
 
-    val hackySSR = HackyServerSideRendering()
+    val hackySSR = HackyServerSideRendering(this)
     val hashManager = WebsiteAssetsHashManager()
     val websiteUrl = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL").removeSuffix("/")
 
@@ -162,6 +164,13 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
 
         Runtime.getRuntime().addShutdownHook(
             thread(false) {
+                // Close all Hacky SSR browsers
+                hackySSR.languageBrowsers.forEach { (_, value) ->
+                    runBlocking {
+                        value.invalidateBrowser()
+                    }
+                }
+                hackySSR.languageBrowsers.clear()
                 server.stop(15_000L, 15_000L)
             }
         )
