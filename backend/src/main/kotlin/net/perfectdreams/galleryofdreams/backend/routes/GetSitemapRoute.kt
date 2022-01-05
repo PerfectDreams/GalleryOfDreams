@@ -189,7 +189,7 @@ class GetSitemapRoute(val m: GalleryOfDreamsBackend) : BaseRoute("/sitemap.xml")
                                     doc.createElement("image:image").apply {
                                         appendChild(
                                             doc.createElement("image:loc").apply {
-                                                textContent = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}")}"
+                                                textContent = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}"
                                             }
                                         )
                                     }
