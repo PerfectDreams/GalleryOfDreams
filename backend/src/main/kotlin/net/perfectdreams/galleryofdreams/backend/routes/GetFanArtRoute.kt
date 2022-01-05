@@ -15,6 +15,7 @@ import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags.fanArt
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts.preferredMediaType
 import net.perfectdreams.galleryofdreams.common.MediaTypeUtils
+import net.perfectdreams.galleryofdreams.common.StoragePaths
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import org.jetbrains.exposed.sql.and
@@ -44,7 +45,7 @@ class GetFanArtRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{a
                         meta(content = i18nContext.get(I18nKeysData.WebsiteTitle)) {
                             attributes["property"] = "og:site_name"
                         }
-                        meta(content = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${fanArtData[FanArts.file]}.${MediaTypeUtils.convertContentTypeToExtension(fanArtData[FanArts.preferredMediaType])}") {
+                        meta(content = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${StoragePaths.FanArt("${fanArtData[FanArts.file]}.${MediaTypeUtils.convertContentTypeToExtension(fanArtData[FanArts.preferredMediaType])}").join()}") {
                             attributes["property"] = "og:image"
                         }
                         meta(name = "twitter:card", content = "summary_large_image")

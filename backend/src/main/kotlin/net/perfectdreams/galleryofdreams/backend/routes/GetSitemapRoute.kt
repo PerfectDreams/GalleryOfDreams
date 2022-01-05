@@ -12,6 +12,7 @@ import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtist
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
 import net.perfectdreams.galleryofdreams.common.MediaTypeUtils
+import net.perfectdreams.galleryofdreams.common.StoragePaths
 import net.perfectdreams.galleryofdreams.common.data.DeviantArtSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.DreamStorageServiceData
@@ -188,7 +189,7 @@ class GetSitemapRoute(val m: GalleryOfDreamsBackend) : BaseRoute("/sitemap.xml")
                                     doc.createElement("image:image").apply {
                                         appendChild(
                                             doc.createElement("image:loc").apply {
-                                                textContent = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}"
+                                                textContent = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}")}"
                                             }
                                         )
                                     }
