@@ -21,6 +21,7 @@ import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtArtistRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtsListRoute
 import net.perfectdreams.galleryofdreams.backend.routes.GetHomeRoute
+import net.perfectdreams.galleryofdreams.backend.routes.GetSitemapRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtArtistByDiscordIdRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtsRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetLanguageInfoRoute
@@ -56,6 +57,8 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         GetFanArtsListRoute(this),
         GetFanArtArtistRoute(this),
         GetFanArtRoute(this),
+
+        GetSitemapRoute(this),
 
         // ===[ API ]===
         GetFanArtsRoute(this),
@@ -101,6 +104,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
 
     val hackySSR = HackyServerSideRendering()
     val hashManager = WebsiteAssetsHashManager()
+    val websiteUrl = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL").removeSuffix("/")
 
     fun start() {
         runBlocking {

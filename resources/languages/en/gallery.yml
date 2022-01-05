@@ -1,9 +1,12 @@
+websiteTitle: "Gallery of Dreams"
+
 home:
   title: "Welcome to {perfectDreamsLogo} Fan Art Gallery!"
   description:
     - "A showcase of the wonderful work of our fans. A showcase of the wonderful work of our fans. Come take a look at the lovely artworks that people made for Loritta, Pantufa, Gabriela, and much more, in our gallery!"
 
 fanArtBy: "Fan Art by {name}"
+userFanArts: "{name}'s Fan Arts"
 sort: "Sort"
 filter: "Filter"
 viewAllFanArts: "View all {fanArtCount} fan arts"

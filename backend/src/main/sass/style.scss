@@ -40,7 +40,7 @@ body {
     font-family: "Lato", "Arial", "sans-serif";
 }
 
-aside#mobile-left-sidebar {
+nav#mobile-left-sidebar {
     background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
     height: 50px;
     display: flex;
@@ -101,7 +101,7 @@ aside#mobile-left-sidebar {
 
 // This sidebar looks weird because we need to do a lot of weird tricks just to hide the sidebar WHEN THE TRANSITION ENDS
 // We did this by having a "is-closed" state that plays the "toggle-sidebar-visibility" animation
-aside#left-sidebar {
+nav#left-sidebar {
     // We will keep this as visibility hidden to avoid tabbing to the sidebar elements when they should be hidden
     // We don't use "display: none;" because it would not animate our mobile transition when opening the sidebar when toggling display state!
     visibility: hidden;

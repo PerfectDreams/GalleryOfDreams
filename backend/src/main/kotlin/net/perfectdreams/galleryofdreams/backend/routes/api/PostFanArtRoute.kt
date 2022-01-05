@@ -91,6 +91,9 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
             )
         }
 
+        // If a new fan art was added, we will purge all the prerendered HTML from our cache!
+        m.hackySSR.pageCache.clear()
+
         call.respondJson(response)
     }
 }

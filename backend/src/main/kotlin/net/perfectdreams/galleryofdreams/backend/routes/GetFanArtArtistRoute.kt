@@ -5,11 +5,21 @@ import io.ktor.html.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
+import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
 
 class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{artistSlug}") {
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
         val cachedRootHTML = withContext(Dispatchers.IO) { m.hackySSR.getOrRenderRootElementPageHTMLForCrawlers(call) }
-        call.respondHtml(block = galleryOfDreamsSpaHtml(m, cachedRootHTML))
+        call.respondHtml(
+            block = galleryOfDreamsSpaHtml(
+                m,
+                i18nContext,
+                i18nContext.get(I18nKeysData.WebsiteTitle),
+                originalPath,
+                {},
+                cachedRootHTML
+            )
+        )
     }
 }

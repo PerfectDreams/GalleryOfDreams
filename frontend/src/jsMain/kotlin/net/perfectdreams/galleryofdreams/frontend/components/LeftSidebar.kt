@@ -8,18 +8,13 @@ import net.perfectdreams.galleryofdreams.frontend.utils.FanArtSortOrder
 import net.perfectdreams.galleryofdreams.frontend.utils.GalleryOfDreamsDataWrapper
 import net.perfectdreams.galleryofdreams.frontend.utils.IconManager
 import net.perfectdreams.i18nhelper.core.I18nContext
-import org.jetbrains.compose.web.attributes.AutoComplete.Companion.name
 import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.attributes.selected
 import org.jetbrains.compose.web.css.fontWeight
 import org.jetbrains.compose.web.dom.A
-import org.jetbrains.compose.web.dom.Aside
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.Input
-import org.jetbrains.compose.web.dom.Option
-import org.jetbrains.compose.web.dom.Select
+import org.jetbrains.compose.web.dom.Nav
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
@@ -28,7 +23,7 @@ fun LeftSidebar(
     data: GalleryOfDreamsDataWrapper,
     i18nContext: I18nContext
 ) {
-    Aside(attrs = {
+    Nav(attrs = {
         id("left-sidebar")
         if (m.appState.isSidebarOpen)
             classes("is-open")
@@ -175,7 +170,7 @@ fun LeftSidebar(
         }
     }
 
-    Aside(attrs = { id("mobile-left-sidebar" )}) {
+    Nav(attrs = { id("mobile-left-sidebar")}) {
         // We use a button so it can be tabbable and has better accessbility
         Button(
             attrs = {

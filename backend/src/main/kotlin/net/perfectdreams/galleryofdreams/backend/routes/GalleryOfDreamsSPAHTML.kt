@@ -1,5 +1,6 @@
 package net.perfectdreams.galleryofdreams.backend.routes
 
+import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.body
 import kotlinx.html.head
@@ -10,17 +11,47 @@ import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.unsafe
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
+import net.perfectdreams.galleryofdreams.backend.tables.FanArts.title
+import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
+import net.perfectdreams.i18nhelper.core.I18nContext
 
-fun galleryOfDreamsSpaHtml(m: GalleryOfDreamsBackend, rootHtmlContent: String = ""): HTML.() -> (Unit) = {
+// https://github.com/thedaviddias/Front-End-Checklist
+fun galleryOfDreamsSpaHtml(
+    m: GalleryOfDreamsBackend,
+    i18nContext: I18nContext,
+    title: String,
+    pathWithoutLocaleId: String,
+    metaBlock: HEAD.() -> (Unit),
+    rootHtmlContent: String = ""
+): HTML.() -> (Unit) = {
+    attributes["lang"] = i18nContext.get(I18nKeysData.WebsiteLocaleIdPath)
+
     head {
-        title("Gallery of Dreams")
-        meta(name = "viewport", content = "width=device-width, initial-scale=1")
+        meta(charset = "utf-8")
+        meta(name = "viewport", content = "width=device-width, initial-scale=1, viewport-fit=cover")
+        // We are sure that we will acess the DreamStorageService URL, so let's preconnect!
+        link(href = m.dreamStorageServiceClient.baseUrl, rel = "preconnect")
+
+        title(title)
+
+        // https://www.reddit.com/r/discordapp/comments/82p8i6/a_basic_tutorial_on_how_to_get_the_most_out_of/
+        meta(name = "theme-color", "#29a6fe")
+        metaBlock.invoke(this)
+
         styleLink("/assets/css/style.css?hash=${m.hashManager.getAssetHash("/assets/css/style.css")}")
         script(src = "/assets/js/frontend.js?hash=${m.hashManager.getAssetHash("/assets/js/frontend.js")}") {
             defer = true // Only execute after the page has been parsed
         }
 
         link(href = "/favicon.svg", rel = "icon", type = "image/svg+xml")
+
+        // https://stackoverflow.com/a/67476915/7271796
+        for ((_, language) in m.languageManager.languageContexts.filter { it.value != i18nContext }) {
+            // The href must be absolute!
+            link(rel = "alternate", href = m.websiteUrl + "/" + language.get(I18nKeysData.WebsiteLocaleIdPath) + pathWithoutLocaleId) {
+                attributes["hreflang"] = language.get(I18nKeysData.WebsiteLocaleIdPath)
+            }
+        }
 
         unsafe {
             raw("""

@@ -26,7 +26,7 @@ class HackyServerSideRendering {
 
     private val crawlers = Json.decodeFromStream<List<Crawler>>(HackyServerSideRendering::class.java.getResourceAsStream("/crawler-user-agents.json"))
 
-    private val pageCache = Caffeine.newBuilder()
+    val pageCache = Caffeine.newBuilder()
         .expireAfterWrite(24L, TimeUnit.HOURS)
         .maximumSize(1_000)
         .build<String, String>()

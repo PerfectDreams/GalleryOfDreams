@@ -3,6 +3,7 @@ package net.perfectdreams.galleryofdreams.frontend.utils
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.browser.document
 import kotlinx.browser.window
 import net.perfectdreams.galleryofdreams.common.FanArtTag
 import net.perfectdreams.galleryofdreams.common.data.FanArt
@@ -45,6 +46,7 @@ class RoutingManager(private val m: GalleryOfDreamsFrontend) {
         // popstate is fired if "data" is different
         // Title is unused
         // https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
+        document.title = screen.title
         window.history.pushState(newPath, "", newPath)
         gtagSafe("set", "page_path", newPath)
         gtagSafe("event", "page_view")
