@@ -114,7 +114,7 @@ class GetSitemapRoute(val m: GalleryOfDreamsBackend) : BaseRoute("/sitemap.xml")
         // TODO: Transform this into a nice DSL
         val rootElement = doc.createElement("urlset").apply {
             // https://developers.google.com/search/docs/advanced/crawling/localized-versions
-            setAttributeNS("http://www.w3.org/2001/XMLSchema", "xsi:schemaLocation", "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd")
+            setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9")
             setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:image", "http://www.google.com/schemas/sitemap-image/1.1")
             setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xhtml", "http://www.w3.org/1999/xhtml")
 
