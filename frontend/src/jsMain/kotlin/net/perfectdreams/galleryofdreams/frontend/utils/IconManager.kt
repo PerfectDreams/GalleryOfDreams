@@ -24,7 +24,6 @@ object IconManager {
     val chevronLeft = registerSVGIcon("chevron-left", svgChevronLeft, SVGOptions.ADD_CURRENT_COLOR_FILLS)
     val chevronRight = registerSVGIcon("chevron-right", svgChevronRight, SVGOptions.ADD_CURRENT_COLOR_FILLS)
     val chevronDown = registerSVGIcon("chevron-down", svgChevronDown, SVGOptions.ADD_CURRENT_COLOR_FILLS)
-    val perfectDreamsLogoPureBlack = registerSVGIcon("perfectdreams-logo-pure-black", svgPerfectDreamsLogoPureBlack, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS)
     val perfectDreamsLogoBlackWithYellowStar = registerSVGIcon("perfectdreams-logo-black-with-yellow-star", svgPerfectDreamsLogoBlackWithYellowStar)
     val loritta = registerPNGIcon("loritta", pngLoritta)
 
@@ -131,17 +130,9 @@ external val svgChevronRight: dynamic
 @JsNonModule
 external val svgChevronDown: dynamic
 
-@JsModule("./icons/perfectdreams-logo-pure-black.svg")
-@JsNonModule
-external val svgPerfectDreamsLogoPureBlack: dynamic
-
 @JsModule("./icons/perfectdreams-logo-black-with-yellow-star.svg")
 @JsNonModule
 external val svgPerfectDreamsLogoBlackWithYellowStar: dynamic
-
-@JsModule("./icons/perfectdreams-logo-colored-with-outline.svg")
-@JsNonModule
-external val svgPerfectDreamsLogoColoredWithOutline: dynamic
 
 @JsModule("./icons/twemoji/1f382.svg")
 @JsNonModule
