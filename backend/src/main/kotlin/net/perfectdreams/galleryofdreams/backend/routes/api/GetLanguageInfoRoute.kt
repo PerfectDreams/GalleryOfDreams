@@ -21,12 +21,12 @@ class GetLanguageInfoRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/
         // Naive Etag implementation: Check if the data hashCode changed or not, if it hasn't, we don't need to send the entire payload again
         val eTagKey = DigestUtils.sha256Hex(dataAsJson)
 
-        if (call.request.header("If-None-Match") == eTagKey) {
+        if (call.request.header("If-None-Match") == "W/\"$eTagKey\"") {
             call.respond(HttpStatusCode.NotModified)
             return
         }
 
-        call.response.header("ETag", eTagKey)
+        call.response.header("ETag", "W/\"$eTagKey\"")
 
         call.respondJson(dataAsJson)
     }

@@ -48,7 +48,7 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
             if (eTagKey != null) {
                 // Naive Etag implementation: Check if the data hashCode changed or not, if it hasn't, we don't need to send the entire payload again
                 // Because all elements within GalleryOfDreamsDataResponse are "data", the hashCode should be consistent if the elements didn't change :)
-                if (call.request.header("If-None-Match") == Hex.encodeHexString(eTagKey))
+                if (call.request.header("If-None-Match") == "W/\"" + Hex.encodeHexString(eTagKey) + "\"")
                     return@transaction null
             }
 
@@ -120,7 +120,7 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
 
         val dataAsJson = Json.encodeToString(data)
 
-        call.response.header("ETag", Hex.encodeHexString(eTagKey))
+        call.response.header("ETag", "W/\"${Hex.encodeHexString(eTagKey)}\"")
 
         call.respondJson(dataAsJson)
     }
