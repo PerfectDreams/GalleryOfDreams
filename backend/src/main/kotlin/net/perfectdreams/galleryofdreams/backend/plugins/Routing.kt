@@ -12,10 +12,6 @@ import java.util.*
 
 fun Application.configureRouting(m: GalleryOfDreamsBackend, routes: List<BaseRoute>) {
     routing {
-        trace {
-            println(it.buildText())
-        }
-
         for (route in routes) {
             if (route is LocalizedRoute) {
                 val originalPath = route.originalPath
