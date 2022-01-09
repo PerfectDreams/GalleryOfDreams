@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 sealed class FanArtArtistSocialConnection
 
 @Serializable
-class DiscordSocialConnection(val id: Long) : FanArtArtistSocialConnection()
+data class DiscordSocialConnection(val id: Long) : FanArtArtistSocialConnection()
 
 @Serializable
-class TwitterSocialConnection(val handle: String) : FanArtArtistSocialConnection()
+data class TwitterSocialConnection(val handle: String) : FanArtArtistSocialConnection()
 
 @Serializable
-class DeviantArtSocialConnection(val handle: String) : FanArtArtistSocialConnection()
+data class DeviantArtSocialConnection(val handle: String) : FanArtArtistSocialConnection()
