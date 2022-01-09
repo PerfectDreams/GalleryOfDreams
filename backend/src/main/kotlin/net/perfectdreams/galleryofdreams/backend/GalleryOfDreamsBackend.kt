@@ -54,7 +54,7 @@ import kotlin.concurrent.thread
 class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     companion object {
         private val logger = KotlinLogging.logger {}
-        val webhookLinkRegex = Regex("https?://(?:[A-z]+\\.)?discord\\.com/api/webhooks/([0-9]+)/([A-z0-9]+)")
+        val webhookLinkRegex = Regex("https?://(?:[A-z]+\\.)?discord\\.com/api/webhooks/([0-9]+)/([A-z0-9-_]+)")
     }
 
     val routes = listOf(
