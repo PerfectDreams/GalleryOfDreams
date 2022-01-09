@@ -42,8 +42,8 @@ dependencies {
     // Used for SEO purposes, by caching the Fan Art page result
     implementation("com.microsoft.playwright:playwright:1.17.0")
 
-    // TODO: Remove later!
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLINX_SERIALIZATION}")
+    // Kord
+    implementation("dev.kord:kord-rest:0.8.x-SNAPSHOT")
 
     testImplementation("io.ktor:ktor-server-tests:${Versions.KTOR}")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.5.31")

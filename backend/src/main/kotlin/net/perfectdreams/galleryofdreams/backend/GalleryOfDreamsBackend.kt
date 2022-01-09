@@ -3,6 +3,7 @@ package net.perfectdreams.galleryofdreams.backend
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
+import dev.kord.common.entity.Snowflake
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.features.*
@@ -37,6 +38,7 @@ import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtist
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
 import net.perfectdreams.galleryofdreams.backend.utils.HackyServerSideRendering
 import net.perfectdreams.galleryofdreams.backend.utils.LanguageManager
+import net.perfectdreams.galleryofdreams.backend.utils.WebhookClient
 import net.perfectdreams.galleryofdreams.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.galleryofdreams.common.FanArtTag
@@ -52,6 +54,7 @@ import kotlin.concurrent.thread
 class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     companion object {
         private val logger = KotlinLogging.logger {}
+        val webhookLinkRegex = Regex("https?://(?:[A-z]+\\.)?discord\\.com/api/webhooks/([0-9]+)/([A-z0-9]+)")
     }
 
     val routes = listOf(
@@ -107,6 +110,10 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     val hackySSR = HackyServerSideRendering(this)
     val hashManager = WebsiteAssetsHashManager()
     val websiteUrl = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL").removeSuffix("/")
+    val webhookClient = System.getenv("GALLERYOFDREAMS_DISCORD_WEBHOOK")?.let {
+        val (_, webhookId, webhookToken) = webhookLinkRegex.matchEntire(it)?.groupValues ?: error("$it is not a valid Discord Webhook!")
+        WebhookClient(Snowflake(webhookId), webhookToken)
+    }
 
     fun start() {
         runBlocking {
