@@ -5,5 +5,5 @@ object Versions {
     const val KOTLINX_SERIALIZATION = "1.3.1"
     const val PROMETHEUS = "0.12.0"
     const val KTOR = "1.6.7"
-    const val I18N_HELPER = "0.0.2-SNAPSHOT"
+    const val I18N_HELPER = "0.0.3-SNAPSHOT"
 }
