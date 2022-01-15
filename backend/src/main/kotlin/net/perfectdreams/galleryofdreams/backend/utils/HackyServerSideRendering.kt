@@ -29,8 +29,8 @@ class HackyServerSideRendering(val m: GalleryOfDreamsBackend) {
     private val crawlers = Json.decodeFromStream<List<Crawler>>(HackyServerSideRendering::class.java.getResourceAsStream("/crawler-user-agents.json"))
 
     val pageCache = Caffeine.newBuilder()
-        .expireAfterWrite(24L, TimeUnit.HOURS)
-        .maximumSize(1_000)
+        .expireAfterAccess(7L, TimeUnit.DAYS)
+        .maximumSize(10_000)
         .build<String, String>()
         .asMap()
 
@@ -63,26 +63,26 @@ class HackyServerSideRendering(val m: GalleryOfDreamsBackend) {
         // Load from cache if it is present
         val cached = pageCache[pathWithQueryParameters]
         if (cached != null) {
-            logger.info { "(User-Agent: ${call.request.userAgent()}) Returning cached page for $pathWithQueryParameters..." }
+            logger.info { "(User-Agent: ${call.request.userAgent()}) Returning cached page for $pathWithQueryParameters... Currently cached pages: ${pageCache.size}" }
             return cached
         }
 
         val browserWrapper = languageBrowsers.getOrPut(i18nContext) { BrowserWrapper() }
-        logger.info { "(User-Agent: ${call.request.userAgent()}) Taking permit to render page $pathWithQueryParameters..." }
+        logger.info { "(User-Agent: ${call.request.userAgent()}) Taking permit to render page $pathWithQueryParameters... Currently cached pages: ${pageCache.size}" }
 
         try {
             return browserWrapper.getOrCreatePage {
                 val start = System.currentTimeMillis()
                 val result = renderRootElementPageHTML(it, pathWithQueryParameters)
                 pageCache[pathWithQueryParameters] = result
-                logger.info { "(User-Agent: ${call.request.userAgent()}) Successfully rendered $pathWithQueryParameters page in ${System.currentTimeMillis() - start}ms! Let's party!!" }
+                logger.info { "(User-Agent: ${call.request.userAgent()}) Successfully rendered $pathWithQueryParameters page in ${System.currentTimeMillis() - start}ms! Let's party!! Currently cached pages: ${pageCache.size}" }
                 result
             }
         } catch (e: BrowserRenderTookTooLong) {
-            logger.error { "(User-Agent: ${call.request.userAgent()}) Page render for $pathWithQueryParameters took more than 5000ms! We are going to provide an empty string for the request..." }
+            logger.error { "(User-Agent: ${call.request.userAgent()}) Page render for $pathWithQueryParameters took more than 5000ms! We are going to provide an empty string for the request... Currently cached pages: ${pageCache.size}" }
             return ""
         } catch (e: Exception) {
-            logger.error(e) { "(User-Agent: ${call.request.userAgent()}) Page render for $pathWithQueryParameters failed! We are going to shutdown the browser and retry the request..." }
+            logger.error(e) { "(User-Agent: ${call.request.userAgent()}) Page render for $pathWithQueryParameters failed! We are going to shutdown the browser and retry the request... Currently cached pages: ${pageCache.size}" }
             browserWrapper.invalidateBrowser()
             return getOrRenderRootElementPageHTML(call, i18nContext)
         }
