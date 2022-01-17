@@ -61,7 +61,7 @@ class GalleryOfDreamsFrontend {
                     spaLoadingWrapper?.addClass("loaded")
 
                     if (routingManager.screenState == null) {
-                        switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value, window.location.pathname)
+                        switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value, window.location.pathname + window.location.search)
                         window.onpopstate = {
                             switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value, it.state as String)
                         }
