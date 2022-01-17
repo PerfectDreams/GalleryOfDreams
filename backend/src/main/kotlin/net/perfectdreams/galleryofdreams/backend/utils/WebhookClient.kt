@@ -34,7 +34,7 @@ fun WebhookClient(
     return WebhookClient(
         webhookId,
         webhookToken,
-        WebhookService(KtorRequestHandler(client, requestRateLimiter, clock, parser))
+        WebhookService(KtorRequestHandler(client, requestRateLimiter, clock, parser, ""))
     )
 }
 
