@@ -37,6 +37,8 @@ fun UIIcon(icon: IconManager.Icon, attrs: AttrBuilderContext<Element>? = null) {
                     }
 
                     onDispose {
+                        // Required to avoid the old svg data "staying" on the element
+                        // Probably there is a better way to invalidate this
                         ref.clear()
                     }
                 }
