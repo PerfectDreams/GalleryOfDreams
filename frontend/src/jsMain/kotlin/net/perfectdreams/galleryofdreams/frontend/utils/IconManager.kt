@@ -89,10 +89,7 @@ object IconManager {
 
     sealed class Icon
     class PNGIcon(val base64Asset: String) : Icon()
-    class SVGIcon(private val _element: Element) : Icon() {
-        val element: Element
-            get() = _element.cloneNode(true) as Element
-    }
+    class SVGIcon(val element: Element) : Icon()
 
     enum class SVGOptions {
         REMOVE_FILLS,
