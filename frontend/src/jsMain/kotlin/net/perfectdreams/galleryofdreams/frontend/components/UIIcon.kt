@@ -1,6 +1,7 @@
 package net.perfectdreams.galleryofdreams.frontend.components
 
 import androidx.compose.runtime.Composable
+import kotlinx.dom.clear
 import net.perfectdreams.galleryofdreams.frontend.utils.IconManager
 import net.perfectdreams.galleryofdreams.frontend.utils.Svg
 import org.jetbrains.compose.web.attributes.AttrsBuilder
@@ -33,6 +34,10 @@ fun UIIcon(icon: IconManager.Icon, attrs: AttrBuilderContext<Element>? = null) {
 
                     icon.element.children.asList().forEach {
                         ref.appendChild(it.cloneNode(true))
+                    }
+
+                    onDispose {
+                        ref.clear()
                     }
                 }
             }
