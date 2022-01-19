@@ -30,17 +30,15 @@ class AppState(private val m: GalleryOfDreamsFrontend)  {
             .take(1)
             .first()
 
-        val host = window.location.protocol + "//" + window.location.host
-
         val jobs = listOf(
             GlobalScope.async {
                 // For some reason using the GalleryOfDreamsClient throws a weird exception in Ktor, probably related to DCE
                 // So let's just... not use that I guess
-                val response = Json.decodeFromString<GalleryOfDreamsDataResponse>(m.http.get<String>("$host/api/v1/fan-arts"))
+                val response = Json.decodeFromString<GalleryOfDreamsDataResponse>(m.http.get<String>("${window.location.origin}/api/v1/fan-arts"))
                 this@AppState.galleryOfDreamsDataWrapper = State.Success(GalleryOfDreamsDataWrapper(response))
             },
             GlobalScope.async {
-                val result = m.http.get<String>("$host/api/v1/languages/$pathLocale") {}
+                val result = m.http.get<String>("${window.location.origin}/api/v1/languages/$pathLocale") {}
 
                 val i18nContext = I18nContext(
                     IntlMFFormatter(),
