@@ -95,7 +95,7 @@ class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenti
                 val fanArtData = attributes.fanArt
 
                 val fanArt = FanArts.insert {
-                    it[FanArts.slug] = attributes.slug
+                    it[FanArts.slug] = fanArtData.slug
                     it[FanArts.title] = fanArtData.title
                     it[FanArts.description] = fanArtData.description
                     it[FanArts.artist] = fanArtArtist[FanArtArtists.id]
