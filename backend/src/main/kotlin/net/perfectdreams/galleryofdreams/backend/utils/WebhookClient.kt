@@ -57,8 +57,8 @@ class WebhookClient(
         builder: WebhookMessageCreateBuilder.() -> Unit
     ) = webhookService.executeWebhook(webhookId, webhookToken, wait, threadId, builder)
 
-    suspend inline fun editWebhookMessage(
+    /* suspend inline fun editWebhookMessage(
         messageId: Snowflake,
         builder: WebhookMessageModifyBuilder.() -> Unit
-    ) = webhookService.editWebhookMessage(webhookId, webhookToken, messageId, builder)
+    ) = webhookService.editWebhookMessage(webhookId, webhookToken, messageId, builder) */
 }
