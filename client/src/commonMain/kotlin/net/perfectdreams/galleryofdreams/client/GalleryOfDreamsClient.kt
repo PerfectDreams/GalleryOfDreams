@@ -10,6 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
 import net.perfectdreams.galleryofdreams.common.data.api.CheckFanArtResponse
+import net.perfectdreams.galleryofdreams.common.data.api.CreateArtistWithFanArtRequest
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtRequest
 import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtResponse
@@ -29,6 +30,32 @@ class GalleryOfDreamsClient(
         }
     }
     val baseUrl = baseUrl.removeSuffix("/") // Remove trailing slash
+
+    suspend fun createArtistWithFanArt(
+        data: ByteArray,
+        mimeType: ContentType,
+        request: CreateArtistWithFanArtRequest
+    ): UploadFanArtResponse {
+        val parts = formData {
+            append("attributes", json.encodeToString(request))
+
+            append(
+                "file",
+                data,
+                Headers.build {
+                    append(HttpHeaders.ContentType, mimeType.toString())
+                    append(HttpHeaders.ContentDisposition, "filename=file") // This needs to be present for it to be recognized as a FileItem!
+                }
+            )
+        }
+
+        val response = http.submitFormWithBinaryData<HttpResponse>("${baseUrl}/api/$apiVersion/artists", formData = parts) {
+            this.method = HttpMethod.Post
+            addAuthorizationTokenIfPresent(true)
+        }
+
+        return json.decodeFromString(response.readText())
+    }
 
     suspend fun uploadFanArt(
         artistId: Long,
