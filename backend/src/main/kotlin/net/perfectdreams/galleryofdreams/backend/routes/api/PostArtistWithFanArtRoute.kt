@@ -37,9 +37,6 @@ import org.jetbrains.exposed.sql.select
 
 class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/artists") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, token: AuthorizationToken) {
-        val artistId = call.parameters.getOrFail("artistId")
-            .toLong()
-
         val (fanArtArtist, response) = withContext(Dispatchers.IO) {
             // Receive the uploaded file
             val multipart = call.receiveMultipart()
