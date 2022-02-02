@@ -35,7 +35,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 
-class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/artists/{artistId}/fan-arts") {
+class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/artists") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, token: AuthorizationToken) {
         val artistId = call.parameters.getOrFail("artistId")
             .toLong()
@@ -150,7 +150,7 @@ class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenti
                 // No mentions are allowed!
                 allowedMentions {}
                 content =
-                    "<:gabriela_brush:727259143903248486> **Fan Art adicionada!** <a:cat_lick:924870725595193355> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}"
+                    "<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionados!** <a:cat_lick:924870725595193355> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}"
             }
         }
 
