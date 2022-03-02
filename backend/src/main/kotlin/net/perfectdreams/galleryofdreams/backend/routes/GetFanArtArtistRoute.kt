@@ -2,9 +2,11 @@ package net.perfectdreams.galleryofdreams.backend.routes
 
 import io.ktor.application.*
 import io.ktor.html.*
+import io.ktor.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
+import net.perfectdreams.galleryofdreams.backend.utils.pathWithoutLocale
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
 
@@ -16,7 +18,7 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
                 m,
                 i18nContext,
                 i18nContext.get(I18nKeysData.WebsiteTitle),
-                originalPath,
+                call.request.pathWithoutLocale(),
                 {},
                 cachedRootHTML
             )

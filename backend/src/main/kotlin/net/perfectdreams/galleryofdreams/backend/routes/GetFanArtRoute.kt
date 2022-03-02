@@ -2,6 +2,7 @@ package net.perfectdreams.galleryofdreams.backend.routes
 
 import io.ktor.application.*
 import io.ktor.html.*
+import io.ktor.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,6 +15,7 @@ import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists.name
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags.fanArt
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts.preferredMediaType
+import net.perfectdreams.galleryofdreams.backend.utils.pathWithoutLocale
 import net.perfectdreams.galleryofdreams.common.MediaTypeUtils
 import net.perfectdreams.galleryofdreams.common.StoragePaths
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
@@ -37,7 +39,7 @@ class GetFanArtRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{a
                     m,
                     i18nContext,
                     i18nContext.get(I18nKeysData.WebsiteTitle),
-                    originalPath,
+                    call.request.pathWithoutLocale(),
                     {
                         meta(content = (fanArtData[FanArts.title] ?: i18nContext.get(I18nKeysData.FanArtBy(fanArtData[FanArtArtists.name])))) {
                             attributes["property"] = "og:title"
