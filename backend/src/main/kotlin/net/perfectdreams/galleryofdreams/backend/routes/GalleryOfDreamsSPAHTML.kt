@@ -53,6 +53,7 @@ fun galleryOfDreamsSpaHtml(
             }
         }
 
+        // TODO: Remove later if Plausible is that good
         unsafe {
             raw("""
                 <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -65,6 +66,13 @@ fun galleryOfDreamsSpaHtml(
                   gtag('config', 'G-30QBEL5NBS');
                 </script>
             """.trimIndent())
+        }
+
+        script(
+            src = "https://web-analytics.perfectdreams.net/js/plausible.js",
+        ) {
+            attributes["data-domain"] = "fanarts.perfectdreams.net"
+            defer = true
         }
     }
 
