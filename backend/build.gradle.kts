@@ -43,7 +43,7 @@ dependencies {
     implementation("com.microsoft.playwright:playwright:1.17.0")
 
     // Kord
-    implementation("dev.kord:kord-rest:0.8.x-SNAPSHOT")
+    implementation("dev.kord:kord-rest:0.8.x-20220315.083129-149")
 
     testImplementation("io.ktor:ktor-server-tests:${Versions.KTOR}")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.5.31")

@@ -147,7 +147,7 @@ class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenti
                 // No mentions are allowed!
                 allowedMentions {}
                 content =
-                    "<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionados!** <a:cat_lick:924870725595193355> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}"
+                    "<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionados!** <a:lori_lick:957368372025262120> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}"
             }
         }
 
