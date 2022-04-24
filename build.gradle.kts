@@ -1,7 +1,7 @@
 plugins {
-    kotlin("multiplatform") version "1.6.10" apply false
-    kotlin("plugin.serialization") version "1.6.10" apply false
-    id("org.jetbrains.compose") version "1.0.1-rc2" apply false
+    kotlin("multiplatform") version Versions.KOTLIN apply false
+    kotlin("plugin.serialization") version Versions.KOTLIN apply false
+    id("org.jetbrains.compose") version "0.0.0-master-dev673" apply false // 0.0.0-master-dev673 supports Kotlin 1.6.21
 }
 
 allprojects {
