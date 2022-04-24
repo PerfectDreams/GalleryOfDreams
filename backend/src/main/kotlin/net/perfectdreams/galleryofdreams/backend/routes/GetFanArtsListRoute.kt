@@ -12,15 +12,13 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 
 class GetFanArtsListRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/fan-arts") {
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
-        val cachedRootHTML = withContext(Dispatchers.IO) { m.hackySSR.getOrRenderRootElementPageHTMLForCrawlers(call, i18nContext) }
         call.respondHtml(
             block = galleryOfDreamsSpaHtml(
                 m,
                 i18nContext,
                 i18nContext.get(I18nKeysData.WebsiteTitle),
                 call.request.pathWithoutLocale(),
-                {},
-                cachedRootHTML
+                {}
             )
         )
     }

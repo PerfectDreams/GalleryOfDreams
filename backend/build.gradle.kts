@@ -43,9 +43,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
 
-    // Used for SEO purposes, by caching the Fan Art page result
-    implementation("com.microsoft.playwright:playwright:1.17.0")
-
     // Kord
     implementation("dev.kord:kord-rest:0.8.0-M13")
 
@@ -68,10 +65,8 @@ jib {
     }
 
     from {
-        // This image comes from the "docker" folder Dockerfile!
-        // Don't forget to build the image before compiling GalleryOfDreams!
-        // https://github.com/GoogleContainerTools/jib/issues/1468
-        image = "tar://${File(rootDir, "docker/image.tar").absoluteFile}"
+
+        image = "openjdk:17-slim-bullseye"
     }
 }
 

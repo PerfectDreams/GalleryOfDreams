@@ -39,7 +39,6 @@ import net.perfectdreams.galleryofdreams.backend.tables.FanArts
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDeviantArtConnections
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
-import net.perfectdreams.galleryofdreams.backend.utils.HackyServerSideRendering
 import net.perfectdreams.galleryofdreams.backend.utils.LanguageManager
 import net.perfectdreams.galleryofdreams.backend.utils.WebhookClient
 import net.perfectdreams.galleryofdreams.backend.utils.WebsiteAssetsHashManager
@@ -110,7 +109,6 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         ContentType.Video.Any
     )
 
-    val hackySSR = HackyServerSideRendering(this)
     val hashManager = WebsiteAssetsHashManager()
     val websiteUrl = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL").removeSuffix("/")
     val webhookClient = System.getenv("GALLERYOFDREAMS_DISCORD_WEBHOOK")?.let {
@@ -174,13 +172,6 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
 
         Runtime.getRuntime().addShutdownHook(
             thread(false) {
-                // Close all Hacky SSR browsers
-                hackySSR.languageBrowsers.forEach { (_, value) ->
-                    runBlocking {
-                        value.invalidateBrowser()
-                    }
-                }
-                hackySSR.languageBrowsers.clear()
                 server.stop(15_000L, 15_000L)
             }
         )

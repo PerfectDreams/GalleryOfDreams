@@ -105,13 +105,6 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
             )
         }
 
-        // If a new fan art was added, we will purge all the prerendered HTML from our cache!
-        m.hackySSR.pageCache.clear()
-        m.hackySSR.languageBrowsers.forEach { (_, value) ->
-            value.invalidateBrowser()
-        }
-        m.hackySSR.languageBrowsers.clear()
-
         GlobalScope.launch {
             m.webhookClient?.executeWebhook {
                 // No mentions are allowed!

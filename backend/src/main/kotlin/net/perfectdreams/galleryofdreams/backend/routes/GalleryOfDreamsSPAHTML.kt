@@ -21,8 +21,7 @@ fun galleryOfDreamsSpaHtml(
     i18nContext: I18nContext,
     title: String,
     pathWithoutLocaleId: String,
-    metaBlock: HEAD.() -> (Unit),
-    rootHtmlContent: String = ""
+    metaBlock: HEAD.() -> (Unit)
 ): HTML.() -> (Unit) = {
     attributes["lang"] = i18nContext.get(I18nKeysData.WebsiteLocaleIdPath)
 
@@ -100,9 +99,7 @@ fun galleryOfDreamsSpaHtml(
         </g>
     </svg>
 </div>
-<div id="root">
-$rootHtmlContent
-</div>""")
+<div id="root"></div>""")
         }
     }
 }
