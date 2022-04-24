@@ -1,9 +1,9 @@
 package net.perfectdreams.galleryofdreams.backend.routes.api
 
 import dev.kord.rest.builder.message.create.allowedMentions
-import io.ktor.application.*
+import io.ktor.server.application.*
 import io.ktor.http.content.*
-import io.ktor.request.*
+import io.ktor.server.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

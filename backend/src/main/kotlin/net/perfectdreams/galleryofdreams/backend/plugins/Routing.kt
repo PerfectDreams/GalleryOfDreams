@@ -1,9 +1,9 @@
 package net.perfectdreams.galleryofdreams.backend.plugins
 
-import io.ktor.application.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.routes.LocalizedRoute
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData

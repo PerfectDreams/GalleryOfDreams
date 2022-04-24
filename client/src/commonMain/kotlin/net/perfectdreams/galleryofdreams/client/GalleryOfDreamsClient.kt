@@ -49,12 +49,12 @@ class GalleryOfDreamsClient(
             )
         }
 
-        val response = http.submitFormWithBinaryData<HttpResponse>("${baseUrl}/api/$apiVersion/artists", formData = parts) {
+        val response = http.submitFormWithBinaryData("${baseUrl}/api/$apiVersion/artists", formData = parts) {
             this.method = HttpMethod.Post
             addAuthorizationTokenIfPresent(true)
         }
 
-        return json.decodeFromString(response.readText())
+        return json.decodeFromString(response.bodyAsText())
     }
 
     suspend fun uploadFanArt(
@@ -76,12 +76,12 @@ class GalleryOfDreamsClient(
             )
         }
 
-        val response = http.submitFormWithBinaryData<HttpResponse>("${baseUrl}/api/$apiVersion/artists/$artistId/fan-arts", formData = parts) {
+        val response = http.submitFormWithBinaryData("${baseUrl}/api/$apiVersion/artists/$artistId/fan-arts", formData = parts) {
             this.method = HttpMethod.Post
             addAuthorizationTokenIfPresent(true)
         }
 
-        return json.decodeFromString(response.readText())
+        return json.decodeFromString(response.bodyAsText())
     }
 
     suspend fun checkFanArt(
@@ -99,33 +99,33 @@ class GalleryOfDreamsClient(
             )
         }
 
-        val response = http.submitFormWithBinaryData<HttpResponse>("${baseUrl}/api/$apiVersion/fan-arts/check", formData = parts) {
+        val response = http.submitFormWithBinaryData("${baseUrl}/api/$apiVersion/fan-arts/check", formData = parts) {
             this.method = HttpMethod.Post
             addAuthorizationTokenIfPresent(true)
         }
 
-        return json.decodeFromString(response.readText())
+        return json.decodeFromString(response.bodyAsText())
     }
 
     // ===[ FAN ARTS ]===
     suspend fun getAllFanArts(): GalleryOfDreamsDataResponse {
-        val response = http.get<HttpResponse>("${baseUrl}/api/$apiVersion/fan-arts") {
+        val response = http.get("${baseUrl}/api/$apiVersion/fan-arts") {
             addAuthorizationTokenIfPresent(false)
         }
 
-        return json.decodeFromString(response.readText())
+        return json.decodeFromString(response.bodyAsText())
     }
 
     // ===[ ARTISTS ]===
     suspend fun getFanArtArtistByDiscordId(discordId: Long): FanArtArtist? {
-        val response = http.get<HttpResponse>("${baseUrl}/api/$apiVersion/social/discord/$discordId") {
+        val response = http.get("${baseUrl}/api/$apiVersion/social/discord/$discordId") {
             addAuthorizationTokenIfPresent(false)
         }
 
         if (response.status == HttpStatusCode.NotFound)
             return null
 
-        return json.decodeFromString(response.readText())
+        return json.decodeFromString(response.bodyAsText())
     }
 
     private fun HttpRequestBuilder.addAuthorizationTokenIfPresent(fatalIfNotPresent: Boolean) {

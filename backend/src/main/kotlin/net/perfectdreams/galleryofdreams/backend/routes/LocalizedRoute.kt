@@ -1,7 +1,7 @@
 package net.perfectdreams.galleryofdreams.backend.routes
 
-import io.ktor.application.*
-import io.ktor.request.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeys
 import net.perfectdreams.i18nhelper.core.I18nContext

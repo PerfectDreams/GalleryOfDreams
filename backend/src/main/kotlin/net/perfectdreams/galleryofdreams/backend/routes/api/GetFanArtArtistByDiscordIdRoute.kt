@@ -1,7 +1,8 @@
 package net.perfectdreams.galleryofdreams.backend.routes.api
 
-import io.ktor.application.*
+import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.util.*
 import io.ktor.util.*
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists

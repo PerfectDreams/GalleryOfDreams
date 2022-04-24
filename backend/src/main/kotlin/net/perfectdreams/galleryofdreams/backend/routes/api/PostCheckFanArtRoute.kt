@@ -1,8 +1,8 @@
 package net.perfectdreams.galleryofdreams.backend.routes.api
 
-import io.ktor.application.*
+import io.ktor.server.application.*
 import io.ktor.http.content.*
-import io.ktor.request.*
+import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.perfectdreams.dreamstorageservice.data.api.CheckImageRequest

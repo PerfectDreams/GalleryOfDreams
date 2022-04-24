@@ -1,9 +1,8 @@
 package net.perfectdreams.galleryofdreams.backend.routes
 
-import io.ktor.application.*
-import io.ktor.html.*
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags
@@ -15,24 +14,17 @@ import net.perfectdreams.galleryofdreams.common.MediaTypeUtils
 import net.perfectdreams.galleryofdreams.common.StoragePaths
 import net.perfectdreams.galleryofdreams.common.data.DeviantArtSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
-import net.perfectdreams.galleryofdreams.common.data.DreamStorageServiceData
 import net.perfectdreams.galleryofdreams.common.data.FanArt
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
 import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
-import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.sequins.ktor.BaseRoute
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.w3c.dom.Document
-import org.w3c.dom.Element
-import java.io.ByteArrayOutputStream
 import java.io.StringWriter
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
-import javax.xml.transform.Transformer
 import javax.xml.transform.TransformerFactory
 import javax.xml.transform.dom.DOMSource
 import javax.xml.transform.stream.StreamResult
