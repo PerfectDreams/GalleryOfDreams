@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.browser.window
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -34,11 +35,11 @@ class AppState(private val m: GalleryOfDreamsFrontend)  {
             GlobalScope.async {
                 // For some reason using the GalleryOfDreamsClient throws a weird exception in Ktor, probably related to DCE
                 // So let's just... not use that I guess
-                val response = Json.decodeFromString<GalleryOfDreamsDataResponse>(m.http.get<String>("${window.location.origin}/api/v1/fan-arts"))
+                val response = Json.decodeFromString<GalleryOfDreamsDataResponse>(m.http.get("${window.location.origin}/api/v1/fan-arts").bodyAsText())
                 this@AppState.galleryOfDreamsDataWrapper = State.Success(GalleryOfDreamsDataWrapper(response))
             },
             GlobalScope.async {
-                val result = m.http.get<String>("${window.location.origin}/api/v1/languages/$pathLocale") {}
+                val result = m.http.get("${window.location.origin}/api/v1/languages/$pathLocale").bodyAsText()
 
                 val i18nContext = I18nContext(
                     IntlMFFormatter(),

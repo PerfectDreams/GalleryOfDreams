@@ -21,11 +21,3 @@ kotlin {
         }
     }
 }
-
-// Reduces Kotlin/JS bundle size
-// https://youtrack.jetbrains.com/issue/KTOR-1084
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile> {
-    kotlinOptions {
-        freeCompilerArgs += listOf("-Xir-per-module", "-Xir-property-lazy-initialization")
-    }
-}
