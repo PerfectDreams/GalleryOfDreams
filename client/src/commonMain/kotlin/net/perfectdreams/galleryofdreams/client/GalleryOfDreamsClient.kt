@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
+import io.ktor.content.*
 import io.ktor.http.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -12,6 +13,7 @@ import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
 import net.perfectdreams.galleryofdreams.common.data.api.CheckFanArtResponse
 import net.perfectdreams.galleryofdreams.common.data.api.CreateArtistWithFanArtRequest
 import net.perfectdreams.galleryofdreams.common.data.api.GalleryOfDreamsDataResponse
+import net.perfectdreams.galleryofdreams.common.data.api.PatchFanArtRequest
 import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtRequest
 import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtResponse
 
@@ -105,6 +107,21 @@ class GalleryOfDreamsClient(
         }
 
         return json.decodeFromString(response.bodyAsText())
+    }
+
+    suspend fun patchFanArt(
+        fanArtSlug: String,
+        request: PatchFanArtRequest
+    ) {
+        http.patch("${baseUrl}/api/$apiVersion/fan-arts/$fanArtSlug") {
+            addAuthorizationTokenIfPresent(true)
+            setBody(
+                TextContent(
+                    Json.encodeToString(request),
+                    ContentType.Application.Json
+                )
+            )
+        }
     }
 
     // ===[ FAN ARTS ]===
