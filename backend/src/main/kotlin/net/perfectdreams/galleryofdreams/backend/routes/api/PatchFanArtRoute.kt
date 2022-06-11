@@ -36,7 +36,7 @@ class PatchFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRou
                     .firstOrNull() ?: return@transaction false
 
                 // Delete all tags
-                FanArtTags.deleteWhere { FanArtTags.id eq fanArt[FanArts.id] }
+                FanArtTags.deleteWhere { FanArtTags.fanArt eq fanArt[FanArts.id] }
 
                 // Reinsert them!
                 for (tag in request.tags) {
