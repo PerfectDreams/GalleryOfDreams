@@ -25,5 +25,6 @@ enum class FanArtTag(
     LORITTA_WEBSITE_ARTS(I18nKeysData.FanArtTags.LorittaWebsiteArts),
     LORITTA(I18nKeysData.FanArtTags.Loritta),
     PANTUFA(I18nKeysData.FanArtTags.Pantufa),
-    GABRIELA(I18nKeysData.FanArtTags.Gabriela)
+    GABRIELA(I18nKeysData.FanArtTags.Gabriela),
+    MRPOWERGAMERBR(I18nKeysData.FanArtTags.MrPowerGamerBR)
 }

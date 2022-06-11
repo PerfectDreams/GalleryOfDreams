@@ -14,6 +14,6 @@ val FanArtTag.icon: IconManager.Icon?
         FanArtTag.COMICS -> IconManager.speechBubble
         FanArtTag.PIXEL_ART -> null
         FanArtTag.LORITTA_WEBSITE_ARTS -> null
-        FanArtTag.LORITTA, FanArtTag.PANTUFA, FanArtTag.GABRIELA -> null
+        FanArtTag.LORITTA, FanArtTag.PANTUFA, FanArtTag.GABRIELA, FanArtTag.MRPOWERGAMERBR -> null
         FanArtTag.LORITTA_JULY_HOLIDAYS_2019_EVENT -> null
     }
