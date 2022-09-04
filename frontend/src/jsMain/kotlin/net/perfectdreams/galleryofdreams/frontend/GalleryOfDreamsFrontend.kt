@@ -80,6 +80,7 @@ class GalleryOfDreamsFrontend {
                                     dataWrapper.value,
                                     i18nContext.value
                                 )
+                                else -> {}
                             }
                         }
                     }

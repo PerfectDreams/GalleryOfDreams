@@ -5,9 +5,11 @@ plugins {
     id("maven-publish")
 }
 
-i18nHelper {
+val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.GenerateI18nKeysTask>("generateI18nKeys") {
     generatedPackage.set("net.perfectdreams.galleryofdreams.common.i18n")
-    languageSourceFolder.set("../resources/languages/en/")
+    languageSourceFolder.set(file("../resources/languages/en/"))
+    languageTargetFolder.set(file("$buildDir/generated/languages"))
+    translationLoadTransform.set { file, map -> map }
 }
 
 kotlin {
