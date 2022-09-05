@@ -21,7 +21,7 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-            kotlin.srcDir("build/generated/languages")
+            kotlin.srcDir(generateI18nKeys)
 
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
