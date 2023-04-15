@@ -1,6 +1,7 @@
 package net.perfectdreams.galleryofdreams.backend.routes.api
 
-import dev.kord.rest.builder.message.create.allowedMentions
+import club.minnced.discord.webhook.send.AllowedMentions
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -106,12 +107,13 @@ class PostFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRout
         }
 
         GlobalScope.launch {
-            m.webhookClient?.executeWebhook {
-                // No mentions are allowed!
-                allowedMentions {}
-                content =
-                    "<:gabriela_brush:727259143903248486> **Fan Art adicionada!** <a:lori_lick:957368372025262120> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}"
-            }
+            m.webhookClient?.send(
+                WebhookMessageBuilder()
+                    // No mentions are allowed!
+                    .setAllowedMentions(AllowedMentions.none())
+                    .setContent("<:gabriela_brush:727259143903248486> **Fan Art adicionada!** <a:lori_lick:957368372025262120> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}")
+                    .build()
+            )
         }
 
         call.respondJson(response)

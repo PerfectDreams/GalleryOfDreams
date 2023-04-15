@@ -1,14 +1,13 @@
 package net.perfectdreams.galleryofdreams.backend.routes.api
 
-import dev.kord.rest.builder.message.create.allowedMentions
-import io.ktor.server.application.*
+import club.minnced.discord.webhook.send.AllowedMentions
+import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import io.ktor.http.content.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
-import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -29,11 +28,8 @@ import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.FanArt
 import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.galleryofdreams.common.data.api.CreateArtistWithFanArtRequest
-import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtRequest
 import net.perfectdreams.galleryofdreams.common.data.api.UploadFanArtResponse
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
 
 class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/artists") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, token: AuthorizationToken) {
@@ -136,12 +132,13 @@ class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenti
         }
 
         GlobalScope.launch {
-            m.webhookClient?.executeWebhook {
-                // No mentions are allowed!
-                allowedMentions {}
-                content =
-                    "<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionados!** <a:lori_lick:957368372025262120> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}"
-            }
+            m.webhookClient?.send(
+                WebhookMessageBuilder()
+                    // No mentions are allowed!
+                    .setAllowedMentions(AllowedMentions.none())
+                    .setContent("<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionados!** <a:lori_lick:957368372025262120> ${m.websiteUrl}/artists/${fanArtArtist[FanArtArtists.slug]}/${response.fanArt.slug}")
+                    .build()
+            )
         }
 
         call.respondJson(response)

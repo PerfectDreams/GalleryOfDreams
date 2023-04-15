@@ -43,8 +43,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
 
-    // Kord
-    implementation("dev.kord:kord-rest:0.8.0-M13")
+    // https://mvnrepository.com/artifact/club.minnced/discord-webhooks
+    implementation("club.minnced:discord-webhooks:0.8.2")
 
     testImplementation("io.ktor:ktor-server-tests:${Versions.KTOR}")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.5.31")

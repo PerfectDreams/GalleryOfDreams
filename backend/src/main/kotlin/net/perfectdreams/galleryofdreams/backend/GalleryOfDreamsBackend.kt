@@ -1,9 +1,9 @@
 package net.perfectdreams.galleryofdreams.backend
 
+import club.minnced.discord.webhook.WebhookClientBuilder
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
-import dev.kord.common.entity.Snowflake
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.http.*
@@ -41,7 +41,6 @@ import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtist
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
 import net.perfectdreams.galleryofdreams.backend.utils.LanguageManager
-import net.perfectdreams.galleryofdreams.backend.utils.WebhookClient
 import net.perfectdreams.galleryofdreams.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.galleryofdreams.common.FanArtTag
@@ -115,7 +114,8 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     val websiteUrl = System.getenv("GALLERYOFDREAMS_WEBSERVER_URL").removeSuffix("/")
     val webhookClient = System.getenv("GALLERYOFDREAMS_DISCORD_WEBHOOK")?.let {
         val (_, webhookId, webhookToken) = webhookLinkRegex.matchEntire(it)?.groupValues ?: error("$it is not a valid Discord Webhook!")
-        WebhookClient(Snowflake(webhookId), webhookToken)
+        WebhookClientBuilder(webhookId.toLong(), webhookToken)
+            .build()
     }
 
     fun start() {
