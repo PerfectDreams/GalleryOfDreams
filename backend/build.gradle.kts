@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":common"))
     implementation(kotlin("stdlib"))
     implementation("net.perfectdreams.sequins.ktor:base-route:1.0.4")
-    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-cio:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-html-builder:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-cors:${Versions.KTOR}")

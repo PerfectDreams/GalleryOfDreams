@@ -9,9 +9,9 @@ import io.ktor.client.plugins.*
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
+import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
-import io.ktor.server.netty.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.cors.*
@@ -135,7 +135,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
             }
         }
 
-        val server = embeddedServer(Netty, port = System.getenv("GALLERYOFDREAMS_WEBSERVER_PORT")?.toIntOrNull() ?: 8080) {
+        val server = embeddedServer(CIO, port = System.getenv("GALLERYOFDREAMS_WEBSERVER_PORT")?.toIntOrNull() ?: 8080) {
             install(CORS) {
                 anyHost()
             }
