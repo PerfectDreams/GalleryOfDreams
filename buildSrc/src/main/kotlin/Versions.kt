@@ -1,5 +1,5 @@
 object Versions {
-    const val GALLERY_OF_DREAMS = "1.0.10"
+    const val GALLERY_OF_DREAMS = "1.0.11"
     const val KOTLIN = "1.7.10"
     const val JIB = "3.2.1"
     const val KOTLINX_SERIALIZATION = "1.3.2"
