@@ -24,9 +24,9 @@ kotlin {
             kotlin.srcDir(generateI18nKeys)
 
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.1")
-                implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
+                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                api("io.ktor:ktor-client-core:${Versions.KTOR}")
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
             }
         }
