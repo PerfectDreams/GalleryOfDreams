@@ -6,4 +6,4 @@ object Versions {
     const val PROMETHEUS = "0.12.0"
     const val KTOR = "2.3.3"
     const val I18N_HELPER = "0.0.5-SNAPSHOT"
-}git ad
+}
