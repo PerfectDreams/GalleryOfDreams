@@ -12,6 +12,7 @@ filter: "Filtrar"
 viewAllFanArts: "Mostrar todas as {fanArtCount} fan arts"
 aboutTheFanArts: "Sobre as Fan Arts"
 websiteLocaleIdPath: "pt"
+updateFilters: "Atualizar Filtros"
 
 sortType:
   fanArtCountAscending: "por quantidade de fan arts (crescente)"

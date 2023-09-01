@@ -21,11 +21,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.galleryofdreams.backend.plugins.configureRouting
-import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtArtistRoute
-import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtRoute
-import net.perfectdreams.galleryofdreams.backend.routes.GetFanArtsListRoute
-import net.perfectdreams.galleryofdreams.backend.routes.GetHomeRoute
-import net.perfectdreams.galleryofdreams.backend.routes.GetSitemapRoute
+import net.perfectdreams.galleryofdreams.backend.routes.*
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtArtistByDiscordIdRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtsRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetLanguageInfoRoute
@@ -40,22 +36,27 @@ import net.perfectdreams.galleryofdreams.backend.tables.FanArts
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDeviantArtConnections
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
 import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
-import net.perfectdreams.galleryofdreams.backend.utils.LanguageManager
-import net.perfectdreams.galleryofdreams.backend.utils.WebsiteAssetsHashManager
+import net.perfectdreams.galleryofdreams.backend.utils.*
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.galleryofdreams.common.FanArtTag
+import net.perfectdreams.galleryofdreams.common.data.*
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
-import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.like
+import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import java.sql.ResultSet
+import java.time.Duration
 import kotlin.concurrent.thread
 
 class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
     companion object {
         private val logger = KotlinLogging.logger {}
         val webhookLinkRegex = Regex("https?://(?:[A-z]+\\.)?discord\\.com/api/webhooks/([0-9]+)/([A-z0-9-_]+)")
+        const val FAN_ARTS_PER_PAGE = 20
+        const val ARTIST_LIST_COUNT_PER_QUERY = 25
     }
 
     val routes = listOf(
@@ -63,6 +64,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         GetFanArtsListRoute(this),
         GetFanArtArtistRoute(this),
         GetFanArtRoute(this),
+        PostFanArtArtistsSearchRoute(this),
 
         GetSitemapRoute(this),
 
@@ -117,6 +119,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         WebhookClientBuilder(webhookId.toLong(), webhookToken)
             .build()
     }
+    val svgIconManager = SVGIconManager(this)
 
     fun start() {
         runBlocking {
@@ -229,5 +232,116 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
             }
         }
         throw lastException ?: RuntimeException("This should never happen")
+    }
+
+    suspend fun searchFanArtArtists(
+        sortOrder: FanArtArtistSortOrder,
+        query: String?,
+        limit: Int,
+        offset: Int
+    ): List<FanArtArtistWithFanArtCount> {
+        return transaction {
+            // We do this manually because we can optimize it better (we don't want to pull all artists if they don't have enough fan arts, as an example)
+            val results = mutableListOf<ResultRow>()
+
+            (this.connection as JdbcConnectionImpl)
+                .connection
+                .let {
+                    when (sortOrder) {
+                        FanArtArtistSortOrder.FAN_ART_COUNT_ASCENDING -> {
+                            it.prepareStatement("select * from fanartartists where fanartartists.name ilike ? order by (select count(*) from fanarts where fanarts.artist = fanartartists.id group by fanarts.artist) asc limit $limit offset $offset;")
+                                .apply {
+                                    this.setString(1, if (query == null) "%" else "%$query%")
+                                }
+                        }
+                        FanArtArtistSortOrder.FAN_ART_COUNT_DESCENDING -> {
+                            it.prepareStatement("select * from fanartartists where fanartartists.name ilike ? order by (select count(*) from fanarts where fanarts.artist = fanartartists.id group by fanarts.artist) desc limit $limit offset $offset;")
+                                .apply {
+                                    this.setString(1, if (query == null) "%" else "%$query%")
+                                }
+                        }
+                        FanArtArtistSortOrder.ALPHABETICALLY_ASCENDING -> {
+                            it.prepareStatement("select * from fanartartists where fanartartists.name ilike ? order by fanartartists.name asc limit $limit offset $offset;")
+                                .apply {
+                                    this.setString(1, if (query == null) "%" else "%$query%")
+                                }
+                        }
+                        FanArtArtistSortOrder.ALPHABETICALLY_DESCENDING -> {
+                            it.prepareStatement("select * from fanartartists where fanartartists.name ilike ? order by fanartartists.name desc limit $limit offset $offset;")
+                                .apply {
+                                    this.setString(1, if (query == null) "%" else "%$query%")
+                                }
+                        }
+                    }
+                }
+                .executeQuery()
+                .also {
+                    while (it.next()) {
+                        results.add(ResultRow.create(it, FanArtArtists.realFields.toSet().mapIndexed { index, expression -> expression to index }.toMap()))
+                    }
+                }
+
+            results.map {
+                val discordSocialConnections = FanArtArtistDiscordConnections.select {
+                    FanArtArtistDiscordConnections.artist eq it[FanArtArtists.id]
+                }
+                val twitterSocialConnections = FanArtArtistTwitterConnections.select {
+                    FanArtArtistTwitterConnections.artist eq it[FanArtArtists.id]
+                }
+                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
+                    FanArtArtistDeviantArtConnections.artist eq it[FanArtArtists.id]
+                }
+
+                val count = FanArts.select {
+                    FanArts.artist eq it[FanArtArtists.id]
+                }.count()
+
+                FanArtArtistWithFanArtCount(
+                    FanArtArtistX(
+                        it[FanArtArtists.id].value,
+                        it[FanArtArtists.slug],
+                        it[FanArtArtists.name],
+                        listOf(),
+                        discordSocialConnections.map {
+                            DiscordSocialConnection(it[FanArtArtistDiscordConnections.discordId])
+                        } + twitterSocialConnections.map {
+                            TwitterSocialConnection(it[FanArtArtistTwitterConnections.handle])
+                        } + deviantArtSocialConnections.map {
+                            DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
+                        },
+                        FanArts.select {
+                            FanArts.artist eq it[FanArtArtists.id].value
+                        }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
+                            convertToFanArt(it)
+                        }
+                    ),
+                    count
+                )
+            }
+        }
+    }
+
+    fun convertToFanArt(fanArt: ResultRow) = FanArt(
+        fanArt[FanArts.id].value,
+        fanArt[FanArts.slug],
+        fanArt[FanArts.title],
+        fanArt[FanArts.description],
+        fanArt[FanArts.createdAt],
+        fanArt[FanArts.dreamStorageServiceImageId],
+        fanArt[FanArts.file],
+        fanArt[FanArts.preferredMediaType],
+        FanArtTags.slice(FanArtTags.tag).select {
+            FanArtTags.fanArt eq fanArt[FanArts.id]
+        }.map { it[FanArtTags.tag] }
+    )
+
+    fun <T:Any> execAndMap(string: String, transform : (ResultSet) -> T) : List<T> {
+        val result = arrayListOf<T>()
+        TransactionManager.current().exec(string) { rs ->
+            while (rs.next()) {
+                result += transform(rs)
+            }
+        }
+        return result
     }
 }

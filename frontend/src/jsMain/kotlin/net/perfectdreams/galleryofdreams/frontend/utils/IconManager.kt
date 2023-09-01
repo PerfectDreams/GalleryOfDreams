@@ -11,27 +11,7 @@ import org.w3c.dom.svg.SVGElement
 object IconManager {
     val registeredIcons = mutableMapOf<String, Icon>()
 
-    val tailSpin = registerSVGIcon("tail-spin", svgTailSpin)
-    val star = registerSVGIcon("star", svgStar)
-    val sparkles = registerSVGIcon("sparkles", svgSparkles)
-    val cake = registerSVGIcon("cake", svgCake)
-    val santaClaus = registerSVGIcon("santa-claus", svgSantaClaus)
-    val speechBubble = registerSVGIcon("speech-bubble", svgSpeechBubble)
-    val pumpkin = registerSVGIcon("pumpkin", svgPumpkin)
-    val womanDancing = registerSVGIcon("woman-dancing", svgWomanDancing)
-    val bars = registerSVGIcon("bars", svgBars, SVGOptions.ADD_CURRENT_COLOR_FILLS)
-    val times = registerSVGIcon("times", svgTimes, SVGOptions.ADD_CURRENT_COLOR_FILLS)
-    val chevronLeft = registerSVGIcon("chevron-left", svgChevronLeft, SVGOptions.ADD_CURRENT_COLOR_FILLS)
-    val chevronRight = registerSVGIcon("chevron-right", svgChevronRight, SVGOptions.ADD_CURRENT_COLOR_FILLS)
     val chevronDown = registerSVGIcon("chevron-down", svgChevronDown, SVGOptions.ADD_CURRENT_COLOR_FILLS)
-    val perfectDreamsLogoBlackWithYellowStar = registerSVGIcon("perfectdreams-logo-black-with-yellow-star", svgPerfectDreamsLogoBlackWithYellowStar)
-    val loritta = registerPNGIcon("loritta", pngLoritta)
-
-    fun registerPNGIcon(name: String, base64Asset: String): PNGIcon {
-        val pngIcon = PNGIcon(base64Asset)
-        registeredIcons[name] = pngIcon
-        return pngIcon
-    }
 
     /**
      * Loads and registers a SVG with [name] and [path]
@@ -97,63 +77,6 @@ object IconManager {
     }
 }
 
-// Needs to be top level!
-@JsModule("./icons/tail-spin.svg")
-@JsNonModule
-external val svgTailSpin: dynamic
-
-@JsModule("./icons/twemoji/2b50.svg")
-@JsNonModule
-external val svgStar: dynamic
-
-@JsModule("./icons/twemoji/2728.svg")
-@JsNonModule
-external val svgSparkles: dynamic
-
-@JsModule("./icons/fontawesome5/bars.svg")
-@JsNonModule
-external val svgBars: dynamic
-
-@JsModule("./icons/fontawesome5/times.svg")
-@JsNonModule
-external val svgTimes: dynamic
-
-@JsModule("./icons/fontawesome5/chevron-left.svg")
-@JsNonModule
-external val svgChevronLeft: dynamic
-
-@JsModule("./icons/fontawesome5/chevron-right.svg")
-@JsNonModule
-external val svgChevronRight: dynamic
-
 @JsModule("./icons/fontawesome5/chevron-down.svg")
 @JsNonModule
 external val svgChevronDown: dynamic
-
-@JsModule("./icons/perfectdreams-logo-black-with-yellow-star.svg")
-@JsNonModule
-external val svgPerfectDreamsLogoBlackWithYellowStar: dynamic
-
-@JsModule("./icons/twemoji/1f382.svg")
-@JsNonModule
-external val svgCake: dynamic
-
-@JsModule("./icons/twemoji/1f385.svg")
-@JsNonModule
-external val svgSantaClaus: dynamic
-
-@JsModule("./icons/twemoji/1f383.svg")
-@JsNonModule
-external val svgPumpkin: dynamic
-
-@JsModule("./icons/twemoji/1f483.svg")
-@JsNonModule
-external val svgWomanDancing: dynamic
-
-@JsModule("./icons/twemoji/1f4ac.svg")
-@JsNonModule
-external val svgSpeechBubble: dynamic
-
-@JsModule("./icons/loritta.png")
-@JsNonModule
-external val pngLoritta: dynamic

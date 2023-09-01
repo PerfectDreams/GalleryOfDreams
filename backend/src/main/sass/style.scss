@@ -99,6 +99,28 @@ nav#mobile-left-sidebar {
     to { visibility: hidden; }
 }
 
+nav#mobile-left-sidebar {
+    &.is-closed {
+        .open-ui {
+            display: block;
+        }
+
+        .close-ui {
+            display: none;
+        }
+    }
+
+    &.is-open {
+        .open-ui {
+            display: none;
+        }
+
+        .close-ui {
+            display: block;
+        }
+    }
+}
+
 // This sidebar looks weird because we need to do a lot of weird tricks just to hide the sidebar WHEN THE TRANSITION ENDS
 // We did this by having a "is-closed" state that plays the "toggle-sidebar-visibility" animation
 nav#left-sidebar {
@@ -167,7 +189,7 @@ nav#left-sidebar {
         scrollbar-width: thin; // Firefox only for now
         scrollbar-color: #00c3ff #004ec8; // Also only available in Firefox
 
-        > .divider {
+        hr.divider {
             width: 100%;
             border: 1px solid #ffffff57;
         }
@@ -258,7 +280,7 @@ section#right-sidebar {
         height: 100vh;
     }
 
-    >.content {
+    >#content {
         width: 100%;
         max-width: 70em;
         margin-left: auto;

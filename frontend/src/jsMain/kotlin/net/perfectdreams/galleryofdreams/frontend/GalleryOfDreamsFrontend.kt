@@ -1,140 +1,159 @@
 package net.perfectdreams.galleryofdreams.frontend
 
+import androidx.compose.runtime.*
 import io.ktor.client.*
+import io.ktor.utils.io.core.*
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
 import net.perfectdreams.galleryofdreams.common.FanArtTag
-import net.perfectdreams.galleryofdreams.frontend.components.FanArtOverview
-import net.perfectdreams.galleryofdreams.frontend.components.FanArtsArtistOverview
-import net.perfectdreams.galleryofdreams.frontend.components.FanArtsOverview
-import net.perfectdreams.galleryofdreams.frontend.components.HomeOverview
-import net.perfectdreams.galleryofdreams.frontend.components.LeftSidebar
-import net.perfectdreams.galleryofdreams.frontend.components.RightSidebar
-import net.perfectdreams.galleryofdreams.frontend.screen.Screen
-import net.perfectdreams.galleryofdreams.frontend.utils.AppState
-import net.perfectdreams.galleryofdreams.frontend.utils.FanArtSortOrder
-import net.perfectdreams.galleryofdreams.frontend.utils.GalleryOfDreamsDataWrapper
-import net.perfectdreams.galleryofdreams.frontend.utils.RoutingManager
-import net.perfectdreams.galleryofdreams.frontend.utils.State
+import net.perfectdreams.galleryofdreams.frontend.components.*
+import net.perfectdreams.galleryofdreams.frontend.utils.*
 import net.perfectdreams.i18nhelper.core.I18nContext
-import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.attributes.name
+import org.jetbrains.compose.web.dom.*
+import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
-import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.*
 import org.w3c.dom.url.URL
 
 class GalleryOfDreamsFrontend {
-    val root by lazy { document.getElementById("root") as HTMLDivElement? }
-    val spaLoadingWrapper by lazy { document.getElementById("spa-loading-wrapper") as HTMLDivElement? }
-    val appState = AppState(this)
-    val routingManager = RoutingManager(this)
-    val http = HttpClient {
-        expectSuccess = false
-    }
+    var isLeftSidebarOpen = false
+    val leftSidebarElement: HTMLElement
+        get() = document.querySelector("#left-sidebar") as HTMLElement
+    val leftSidebarMobileElement: HTMLElement
+        get() = document.querySelector("#mobile-left-sidebar") as HTMLElement
 
     fun start() {
-        appState.loadData()
+        document.addEventListener("htmx:load", { elt ->
+            val targetElement = elt.asDynamic().target as HTMLElement
 
-        document.addEventListener("DOMContentLoaded", {
-            renderComposable(rootElementId = "root") {
-                val dataWrapper = appState.galleryOfDreamsDataWrapper
-                val i18nContext = appState.i18nContext
+            val hamburgerButton = targetElement.querySelector("#hamburger-button")
+            hamburgerButton?.addEventListener("click", {
+                if (isLeftSidebarOpen) {
+                    leftSidebarElement.removeClass("is-open")
+                    leftSidebarMobileElement.removeClass("is-open")
+                    leftSidebarElement.addClass("is-closed")
+                    leftSidebarMobileElement.addClass("is-closed")
+                } else {
+                    leftSidebarElement.addClass("is-open")
+                    leftSidebarMobileElement.addClass("is-open")
+                    leftSidebarElement.removeClass("is-closed")
+                    leftSidebarMobileElement.removeClass("is-closed")
+                }
 
-                if (dataWrapper is State.Success && i18nContext is State.Success) {
-                    // Fade out the single page application loading wrapper...
-                    spaLoadingWrapper?.addClass("loaded")
+                isLeftSidebarOpen = !isLeftSidebarOpen
+            })
 
-                    if (routingManager.screenState == null) {
-                        switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value, window.location.pathname + window.location.search)
-                        window.onpopstate = {
-                            switchToProperScreenBasedOnPath(dataWrapper.value, i18nContext.value, it.state as String)
+            targetElement.querySelectorAll("select").asList().forEach {
+                if (it is HTMLSelectElement) {
+                    if (it.hasAttribute("power-select") && !it.hasAttribute("powered-up")) {
+                        // It is a power select!
+                        // We are going to render our select menu below it
+                        val htmlOptions = it.querySelectorAll("option")
+                            .asList()
+                            .filterIsInstance<HTMLOptionElement>()
+
+                        val customSelectMenu = document.createElement("div")
+                        it.insertAdjacentElement("afterend", customSelectMenu)
+
+                        val selectedEntries = mutableStateListOf<String>()
+
+                        htmlOptions.forEach {
+                            println(it.value + " is selected? ${it.selected}")
+                            if (it.selected)
+                                selectedEntries.add(it.value)
                         }
-                    }
 
-                    Div(attrs = { id("wrapper") }) {
-                        LeftSidebar(this@GalleryOfDreamsFrontend, dataWrapper.value, i18nContext.value)
+                        // Do we have any parent form?
+                        var formElement: HTMLFormElement? = null
+                        var currentParentElement = it.parentElement
 
-                        RightSidebar {
-                            when (val screen = routingManager.screenState) {
-                                is Screen.HomeOverview -> HomeOverview(
-                                    this@GalleryOfDreamsFrontend,
-                                    screen,
-                                    dataWrapper.value,
-                                    i18nContext.value
+                        while (currentParentElement != null) {
+                            if (currentParentElement is HTMLFormElement) {
+                                formElement = currentParentElement
+                                break
+                            }
+
+                            currentParentElement = currentParentElement.parentElement
+                        }
+
+                        console.log("form element")
+                        console.log(formElement)
+
+                        renderComposable(customSelectMenu) {
+                            var isFirstCheck by remember { mutableStateOf(true) }
+
+                            val options = htmlOptions.map {
+                                SimpleSelectMenuEntry(
+                                    {
+                                        val html = it.getAttribute("option-html")
+                                        if (html != null) {
+                                            Span(
+                                                attrs = {
+                                                    ref { htmlDivElement ->
+                                                        htmlDivElement.outerHTML = html
+
+                                                        onDispose {}
+                                                    }
+                                                }
+                                            ) {}
+                                        } else {
+                                            Text(it.text)
+                                        }
+                                    },
+                                    it.value,
+                                    it.value in selectedEntries
                                 )
-                                is Screen.FanArtsOverview -> FanArtsOverview(
-                                    this@GalleryOfDreamsFrontend,
-                                    screen,
-                                    dataWrapper.value,
-                                    i18nContext.value
-                                )
-                                is Screen.FanArtsArtistOverview -> FanArtsArtistOverview(
-                                    this@GalleryOfDreamsFrontend,
-                                    screen,
-                                    dataWrapper.value,
-                                    i18nContext.value
-                                )
-                                is Screen.FanArtOverview -> FanArtOverview(
-                                    this@GalleryOfDreamsFrontend,
-                                    screen,
-                                    dataWrapper.value,
-                                    i18nContext.value
-                                )
-                                else -> {}
+                            }
+
+                            val maxValuesAsString = it.getAttribute("max-values")
+                            val maxValues = if (maxValuesAsString == "null")
+                                null
+                            else
+                                maxValuesAsString?.toIntOrNull() ?: 1
+
+                            SimpleSelectMenu(
+                                options,
+                                maxValues,
+                                onClose = {
+                                    selectedEntries.clear()
+                                    selectedEntries.addAll(it)
+                                }
+                            )
+
+                            for (entry in selectedEntries) {
+                                Input(InputType.Hidden) {
+                                    name(it.name)
+                                    value(entry)
+                                }
+                            }
+
+                            if (formElement != null) {
+                                key(selectedEntries) {
+                                    println(isFirstCheck)
+
+                                    if (!isFirstCheck) {
+                                        GlobalScope.launch {
+                                            console.log("triggering on form element detected")
+                                            trigger(formElement, "submit", mapOf<Any, Any>())
+                                        }
+                                    }
+
+                                    isFirstCheck = false
+                                }
                             }
                         }
+
+                        // Delete the original select menu
+                        it.remove()
                     }
                 }
             }
         })
-    }
-
-    internal fun switchToProperScreenBasedOnPath(
-        data: GalleryOfDreamsDataWrapper,
-        i18nContext: I18nContext,
-        path: String
-    ) {
-        val url = URL("http://127.0.0.1$path")
-
-        val pathWithoutLocale = url.pathname
-            .split("/")
-            .drop(2)
-            .joinToString("/")
-            .let { "/$it" }
-
-        val queryParams = url.searchParams
-
-        if (pathWithoutLocale == "/") {
-            routingManager.switchToHomeOverview(i18nContext)
-        } else if (pathWithoutLocale.startsWith("/fan-arts")) {
-            routingManager.switchToFanArtsOverview(
-                i18nContext,
-                (queryParams.get("page")?.toIntOrNull()?.minus(1)) ?: 0,
-                queryParams.get("sort")?.let { FanArtSortOrder.valueOf(it) } ?: FanArtSortOrder.DATE_DESCENDING,
-                queryParams.getAll("tags").map { FanArtTag.valueOf(it) }
-            )
-        } else if (pathWithoutLocale.startsWith("/artists")) {
-            val artistFanArtPage = Regex("/artists/([A-z0-9-_]+)/([A-z0-9-_]+)")
-                .matchEntire(pathWithoutLocale)
-            val artistPage = Regex("/artists/([A-z0-9-_]+)")
-                .matchEntire(pathWithoutLocale)
-
-            if (artistFanArtPage != null) {
-                val artist = data.artists.first { it.slug == artistFanArtPage.groupValues[1] }
-                routingManager.switchToFanArtOverview(
-                    i18nContext,
-                    artist,
-                    artist.fanArts.first { it.slug == artistFanArtPage.groupValues[2] }
-                )
-            } else if (artistPage != null) {
-                routingManager.switchToArtistFanArtsOverview(
-                    i18nContext,
-                    data.artists.first { it.slug == artistPage.groupValues[1] },
-                    (queryParams.get("page")?.toIntOrNull()?.minus(1)) ?: 0,
-                    queryParams.get("sort")?.let { FanArtSortOrder.valueOf(it) } ?: FanArtSortOrder.DATE_DESCENDING,
-                    queryParams.getAll("tags").map { FanArtTag.valueOf(it) }
-                )
-            }
-        }
     }
 }

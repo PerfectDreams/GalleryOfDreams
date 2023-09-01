@@ -8,6 +8,7 @@ import io.ktor.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.html.InputType
+import kotlinx.html.body
 import kotlinx.html.meta
 import kotlinx.serialization.json.JsonNull.content
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
@@ -16,44 +17,96 @@ import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists.name
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags.fanArt
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts.preferredMediaType
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDeviantArtConnections
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistDiscordConnections
+import net.perfectdreams.galleryofdreams.backend.tables.connections.FanArtArtistTwitterConnections
+import net.perfectdreams.galleryofdreams.backend.utils.FanArtArtistSortOrder
+import net.perfectdreams.galleryofdreams.backend.utils.FanArtArtistWithFanArt
+import net.perfectdreams.galleryofdreams.backend.utils.htmxElementTarget
 import net.perfectdreams.galleryofdreams.backend.utils.pathWithoutLocale
+import net.perfectdreams.galleryofdreams.backend.views.FanArtView
+import net.perfectdreams.galleryofdreams.backend.views.FanArtsView
 import net.perfectdreams.galleryofdreams.common.MediaTypeUtils
 import net.perfectdreams.galleryofdreams.common.StoragePaths
+import net.perfectdreams.galleryofdreams.common.data.DeviantArtSocialConnection
+import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
+import net.perfectdreams.galleryofdreams.common.data.FanArtArtistX
+import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class GetFanArtRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{artistSlug}/{fanArtSlug}") {
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
-        val fanArtData = m.transaction {
-            FanArts.innerJoin(FanArtArtists)
+        val fanArtAndArtist = m.transaction {
+            val data = FanArts.innerJoin(FanArtArtists)
                 .select { FanArtArtists.slug eq call.parameters.getOrFail("artistSlug") and (FanArts.slug eq call.parameters.getOrFail("fanArtSlug")) }
-                .firstOrNull()
-        }
-        val namespace = m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve()
+                .first()
 
-        if (fanArtData != null) {
-            call.respondHtml(
-                block = galleryOfDreamsSpaHtml(
-                    m,
-                    i18nContext,
-                    i18nContext.get(I18nKeysData.WebsiteTitle),
-                    call.request.pathWithoutLocale(),
-                    {
-                        meta(content = (fanArtData[FanArts.title] ?: i18nContext.get(I18nKeysData.FanArtBy(fanArtData[FanArtArtists.name])))) {
-                            attributes["property"] = "og:title"
-                        }
-                        meta(content = i18nContext.get(I18nKeysData.WebsiteTitle)) {
-                            attributes["property"] = "og:site_name"
-                        }
-                        meta(content = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${StoragePaths.FanArt("${fanArtData[FanArts.file]}.${MediaTypeUtils.convertContentTypeToExtension(fanArtData[FanArts.preferredMediaType])}").join()}") {
-                            attributes["property"] = "og:image"
-                        }
-                        meta(name = "twitter:card", content = "summary_large_image")
+            val discordSocialConnections = FanArtArtistDiscordConnections.select {
+                FanArtArtistDiscordConnections.artist eq data[FanArtArtists.id]
+            }
+            val twitterSocialConnections = FanArtArtistTwitterConnections.select {
+                FanArtArtistTwitterConnections.artist eq data[FanArtArtists.id]
+            }
+            val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
+                FanArtArtistDeviantArtConnections.artist eq data[FanArtArtists.id]
+            }
+
+            FanArtArtistWithFanArt(
+                FanArtArtistX(
+                    data[FanArtArtists.id].value,
+                    data[FanArtArtists.slug],
+                    data[name],
+                    listOf(),
+                    discordSocialConnections.map {
+                        DiscordSocialConnection(it[FanArtArtistDiscordConnections.discordId])
+                    } + twitterSocialConnections.map {
+                        TwitterSocialConnection(it[FanArtArtistTwitterConnections.handle])
+                    } + deviantArtSocialConnections.map {
+                        DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
+                    },
+                    FanArts.select {
+                        FanArts.artist eq data[FanArtArtists.id].value
+                    }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
+                        m.convertToFanArt(it)
                     }
-                )
+                ),
+                m.convertToFanArt(data)
             )
+        }
+
+        val view = FanArtView(
+            m,
+            i18nContext,
+            i18nContext.get(I18nKeysData.WebsiteTitle),
+            call.request.pathWithoutLocale(),
+            m.dreamStorageServiceClient.baseUrl,
+            m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve(),
+            fanArtAndArtist.fanArtArtist,
+            fanArtAndArtist.fanArt
+        )
+
+        when (call.htmxElementTarget) {
+            "content" -> {
+                call.respondHtml {
+                    body {
+                        apply(view.rightSidebar())
+                    }
+                }
+            }
+            else -> {
+                val fanArtArtists = m.searchFanArtArtists(FanArtArtistSortOrder.FAN_ART_COUNT_DESCENDING, null, GalleryOfDreamsBackend.ARTIST_LIST_COUNT_PER_QUERY, 0)
+                val totalFanArts = m.transaction { FanArts.selectAll().count() }
+
+                call.respondHtml {
+                    apply(view.generateHtml(totalFanArts, fanArtArtists))
+                }
+            }
         }
     }
 }

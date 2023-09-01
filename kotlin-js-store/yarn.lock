@@ -1366,6 +1366,11 @@ html-entities@^2.3.2:
   resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-2.3.2.tgz#760b404685cb1d794e4f4b744332e3b00dcfe488"
   integrity sha512-c3Ab/url5ksaT0WyleslpBEthOzWhrjQbg75y7XUsfSzi3Dgzt0l8w5e7DylRn15MTlMMD58dTfzddNS2kcAjQ==
 
+htmx.org@1.9.5:
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/htmx.org/-/htmx.org-1.9.5.tgz#043a934c50e9945538480679e572ed1f31dbd655"
+  integrity sha512-YUMH1/zOe+75bZnSbtkqwK8wAoTJcgvwVA2W6CXoODBtsg2F9HJIPzM3vzosevrilpV6jLAR6nKapKypBs7v2A==
+
 http-deceiver@^1.2.7:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/http-deceiver/-/http-deceiver-1.2.7.tgz#fa7168944ab9a519d337cb0bec7284dc3e723d87"
