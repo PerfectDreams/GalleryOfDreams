@@ -94,7 +94,7 @@ class FanArtView(
         meta(content = i18nContext.get(I18nKeysData.WebsiteTitle)) {
             attributes["property"] = "og:site_name"
         }
-        meta(content = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}") {
+        meta(content = m.dreamStorageServiceClient.baseUrl + "/${this@FanArtView.namespace}/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}") {
             attributes["property"] = "og:image"
         }
         meta(name = "twitter:card", content = "summary_large_image")
