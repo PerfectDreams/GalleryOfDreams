@@ -33,6 +33,8 @@ class GalleryOfDreamsFrontend {
         leftSidebarMobileElement.addClass("is-open")
         leftSidebarElement.removeClass("is-closed")
         leftSidebarMobileElement.removeClass("is-closed")
+
+        isLeftSidebarOpen = true
     }
 
     private fun closeSidebar() {
@@ -40,6 +42,8 @@ class GalleryOfDreamsFrontend {
         leftSidebarMobileElement.removeClass("is-open")
         leftSidebarElement.addClass("is-closed")
         leftSidebarMobileElement.addClass("is-closed")
+
+        isLeftSidebarOpen = false
     }
 
     private fun toggleSidebar() {
@@ -48,8 +52,6 @@ class GalleryOfDreamsFrontend {
         } else {
             closeSidebar()
         }
-
-        isLeftSidebarOpen = !isLeftSidebarOpen
     }
 
     fun start() {

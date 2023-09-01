@@ -170,6 +170,7 @@ abstract class DashboardView(
 
                             a(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/fan-arts") {
                                 attributes["hx-target"] = "#content"
+                                attributes["power-close-sidebar"] = "true"
 
                                 text(i18nContext.get(I18nKeysData.ViewAllFanArts(totalFanArtCount)))
                             }

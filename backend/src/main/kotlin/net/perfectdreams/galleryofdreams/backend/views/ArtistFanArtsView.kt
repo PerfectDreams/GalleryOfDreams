@@ -40,7 +40,7 @@ class ArtistFanArtsView(
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         div {
             id = "fan-arts-wrapper"
-            
+
             h1 {
                 text(fanArtArtist.name)
             }
