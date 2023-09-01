@@ -18,6 +18,7 @@ fun FlowContent.fanArtArtist(
     div {
         a(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/artists/${artist.slug}") {
             attributes["hx-target"] = "#content"
+            attributes["power-close-sidebar"] = "true"
 
             val url = FanArtUtils.getArtistAvatarUrl(dssBaseUrl, namespace, artist, 32)
 
@@ -30,7 +31,6 @@ fun FlowContent.fanArtArtist(
 
             div {
                 style = "display: flex; flex-direction: column;"
-                attributes["power-close-sidebar"] = "true"
 
                 div {
                     text(artist.name)

@@ -79,7 +79,7 @@ class FanArtsView(
             }
 
             fanArtCardGrid(m, i18nContext, dssBaseUrl, this@FanArtsView.namespace, fanArts)
-            
+
             div {
                 style = "text-align: center;"
 
