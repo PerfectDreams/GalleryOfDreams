@@ -3,6 +3,7 @@ package net.perfectdreams.galleryofdreams.backend.views
 import kotlinx.html.*
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.components.fanArtCard
+import net.perfectdreams.galleryofdreams.backend.components.fanArtCardGrid
 import net.perfectdreams.galleryofdreams.backend.components.fanArtFilters
 import net.perfectdreams.galleryofdreams.backend.components.pagination
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
@@ -77,15 +78,8 @@ class FanArtsView(
                 }
             }
 
-            div {
-                style =
-                    "display: grid; grid-template-columns: repeat(auto-fill, minmax(192px, 1fr)); grid-template-rows: repeat(auto-fill, minmax(192px, 1fr)); gap: 1em; justify-content: space-between; width: 100%;"
-
-                for (fanArt in fanArts) {
-                    fanArtCard(m, i18nContext, dssBaseUrl, this@FanArtsView.namespace, fanArt.fanArtArtist, fanArt.fanArt)
-                }
-            }
-
+            fanArtCardGrid(m, i18nContext, dssBaseUrl, this@FanArtsView.namespace, fanArts)
+            
             div {
                 style = "text-align: center;"
 

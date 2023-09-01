@@ -7,10 +7,12 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.components.fanArtCard
+import net.perfectdreams.galleryofdreams.backend.components.fanArtCardGrid
 import net.perfectdreams.galleryofdreams.backend.components.fanArtFilters
 import net.perfectdreams.galleryofdreams.backend.components.pagination
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags
 import net.perfectdreams.galleryofdreams.backend.tables.FanArts
+import net.perfectdreams.galleryofdreams.backend.utils.FanArtArtistWithFanArt
 import net.perfectdreams.galleryofdreams.backend.utils.FanArtSortOrder
 import net.perfectdreams.galleryofdreams.backend.utils.websiteLocaleIdPath
 import net.perfectdreams.galleryofdreams.common.FanArtTag
@@ -90,13 +92,7 @@ class ArtistFanArtsView(
 
             id = "fan-arts-grid-and-pagination"
 
-            div {
-                style = "display: grid; grid-template-columns: repeat(auto-fill, minmax(192px, 1fr)); grid-template-rows: repeat(auto-fill, minmax(192px, 1fr)); gap: 1em; justify-content: space-between; width: 100%;"
-
-                for (fanArt in fanArts) {
-                    fanArtCard(m, i18nContext, dssBaseUrl, this@ArtistFanArtsView.namespace, fanArtArtist, fanArt)
-                }
-            }
+            fanArtCardGrid(m, i18nContext, dssBaseUrl, this@ArtistFanArtsView.namespace, fanArts.map { FanArtArtistWithFanArt(fanArtArtist, it) })
 
             div {
                 style = "text-align: center;"
