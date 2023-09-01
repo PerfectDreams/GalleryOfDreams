@@ -8,6 +8,7 @@ import net.perfectdreams.galleryofdreams.backend.components.fanArtArtist
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists
 import net.perfectdreams.galleryofdreams.backend.utils.FanArtArtistSortOrder
 import net.perfectdreams.galleryofdreams.backend.utils.FanArtArtistWithFanArtCount
+import net.perfectdreams.galleryofdreams.backend.utils.aHtmx
 import net.perfectdreams.galleryofdreams.backend.utils.websiteLocaleIdPath
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -103,8 +104,7 @@ abstract class DashboardView(
                         attributes["hx-preserve"] = "true"
 
                         div(classes = "entries") {
-                            a(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/") {
-                                attributes["hx-target"] = "#content"
+                            aHtmx(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/", hxTarget = "#content") {
                                 attributes["power-close-sidebar"] = "true"
 
                                 text(i18nContext.get(I18nKeysData.AboutTheFanArts))
@@ -168,8 +168,7 @@ abstract class DashboardView(
 
                             hr(classes = "divider")
 
-                            a(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/fan-arts") {
-                                attributes["hx-target"] = "#content"
+                            aHtmx(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/fan-arts", hxTarget = "#content") {
                                 attributes["power-close-sidebar"] = "true"
 
                                 text(i18nContext.get(I18nKeysData.ViewAllFanArts(totalFanArtCount)))

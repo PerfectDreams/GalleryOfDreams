@@ -4,6 +4,7 @@ import kotlinx.html.*
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.perfectdreams.galleryofdreams.backend.utils.FanArtUtils
+import net.perfectdreams.galleryofdreams.backend.utils.aHtmx
 import net.perfectdreams.galleryofdreams.backend.utils.websiteLocaleIdPath
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtistX
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -16,8 +17,7 @@ fun FlowContent.fanArtArtist(
     fanArtCount: Long
 ) {
     div {
-        a(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/artists/${artist.slug}") {
-            attributes["hx-target"] = "#content"
+        aHtmx(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/artists/${artist.slug}", hxTarget = "#content") {
             attributes["power-close-sidebar"] = "true"
 
             val url = FanArtUtils.getArtistAvatarUrl(dssBaseUrl, namespace, artist, 32)
