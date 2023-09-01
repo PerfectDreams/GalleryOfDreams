@@ -41,5 +41,4 @@ jobs:
         ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
         ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
       with:
-        cache-disabled: true
         arguments: build publish :backend:jib 
