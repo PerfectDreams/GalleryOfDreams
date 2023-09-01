@@ -75,8 +75,8 @@ class GetFanArtsListRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/fan-a
                                 DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
                             },
                             FanArts.select {
-                                FanArts.artist eq fanArtArtist[FanArtArtists.id]
-                            }.limit(1).firstOrNull()?.let {
+                                FanArts.artist eq fanArtArtist[FanArtArtists.id].value
+                            }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
                                 m.convertToFanArt(it)
                             }
                         ),

@@ -75,7 +75,7 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
                     },
                     FanArts.select {
                         FanArts.artist eq fanArtArtist[FanArtArtists.id].value
-                    }.limit(1).firstOrNull()?.let {
+                    }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
                         m.convertToFanArt(it)
                     }
                 ),
