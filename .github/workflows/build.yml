@@ -38,7 +38,8 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build
+        cache-disabled: true
+        arguments: build publish :backend:jib 
 
     - name: Publish to PerfectDreams' repository
       if: github.ref == 'refs/heads/main'
@@ -48,8 +49,3 @@ jobs:
         ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
       with:
         arguments: "publish"
-
-    - name: Publish to Docker
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: ":backend:jib"
