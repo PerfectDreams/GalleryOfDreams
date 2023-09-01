@@ -35,7 +35,9 @@ class FanArtsView(
             form(method = FormMethod.get, action = "/${i18nContext.websiteLocaleIdPath}/fan-arts") {
                 id = "fan-arts-grid"
                 attributes["hx-target"] = "#fan-arts-grid-and-pagination"
-
+                attributes["hx-get"] = action
+                attributes["hx-push-url"] = "true"
+                
                 fanArtFilters(m, i18nContext, fanArtSortOrder, fanArtTags)
 
                 hr {}

@@ -40,6 +40,8 @@ class ArtistFanArtsView(
             form(method = FormMethod.get, action = "/${i18nContext.websiteLocaleIdPath}/artists/$artistSlug") {
                 id = "fan-arts-wrapper"
                 attributes["hx-target"] = "#fan-arts-grid-and-pagination"
+                attributes["hx-get"] = action
+                attributes["hx-push-url"] = "true"
 
                 h1 {
                     text(fanArtArtist.name)

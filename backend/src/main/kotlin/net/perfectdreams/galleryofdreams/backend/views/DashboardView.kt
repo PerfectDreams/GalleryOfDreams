@@ -67,6 +67,7 @@ abstract class DashboardView(
 
         body {
             attributes["hx-boost"] = "true"
+            attributes["hx-swap"] = "focus-scroll:false"
 
             div {
                 id = "root"
