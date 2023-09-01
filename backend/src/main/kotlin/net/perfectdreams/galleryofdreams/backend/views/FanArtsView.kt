@@ -37,7 +37,7 @@ class FanArtsView(
                 attributes["hx-target"] = "#fan-arts-grid-and-pagination"
                 attributes["hx-get"] = action
                 attributes["hx-push-url"] = "true"
-                
+
                 fanArtFilters(m, i18nContext, fanArtSortOrder, fanArtTags)
 
                 hr {}

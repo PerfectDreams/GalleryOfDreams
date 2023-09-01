@@ -37,7 +37,7 @@ class GetHomeRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/") {
                 val fanArtArtists = m.searchFanArtArtists(
                     FanArtArtistSortOrder.FAN_ART_COUNT_DESCENDING,
                     null,
-                    10,
+                    GalleryOfDreamsBackend.ARTIST_LIST_COUNT_PER_QUERY,
                     0
                 )
 
