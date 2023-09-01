@@ -41,17 +41,17 @@ body {
 }
 
 nav#mobile-left-sidebar {
-    background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
+    background: var(--loritta-blue);
     height: 50px;
     display: flex;
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
     z-index: 1;
     align-items: center;
     justify-content: space-between;
-    box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+    box-shadow: rgba(0, 101, 255, 0.3) 0px 0px 15px; // Shadow
     color: white;
 
     @include bp('medium') {
@@ -80,6 +80,26 @@ nav#mobile-left-sidebar {
             display: block;
         }
     }
+
+    &.is-closed {
+        .open-ui {
+            display: block;
+        }
+
+        .close-ui {
+            display: none;
+        }
+    }
+
+    &.is-open {
+        .open-ui {
+            display: none;
+        }
+
+        .close-ui {
+            display: block;
+        }
+    }
 }
 
 // We animate it with a nice "push pane to screen" animation
@@ -99,28 +119,6 @@ nav#mobile-left-sidebar {
     to { visibility: hidden; }
 }
 
-nav#mobile-left-sidebar {
-    &.is-closed {
-        .open-ui {
-            display: block;
-        }
-
-        .close-ui {
-            display: none;
-        }
-    }
-
-    &.is-open {
-        .open-ui {
-            display: none;
-        }
-
-        .close-ui {
-            display: block;
-        }
-    }
-}
-
 // This sidebar looks weird because we need to do a lot of weird tricks just to hide the sidebar WHEN THE TRANSITION ENDS
 // We did this by having a "is-closed" state that plays the "toggle-sidebar-visibility" animation
 nav#left-sidebar {
@@ -132,10 +130,10 @@ nav#left-sidebar {
     flex-shrink: 0; // Do not shink the sidebar!
     box-shadow: initial; // Shadow
     z-index: 2; // Make the left sidebar be on top of the right sidebar, fixes the shadow
-    color: white;
-    background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%;
-    // Seems weird but this is only used for small breakpoints
-    top: 0;
+    color: #333333;
+    background: #f2f3f5;
+    // Seems weird but this is used for mobile
+    top: 50px;
     // Again, for small breakpoints
     // We don't use 100vh because Chrome Mobile has a dynamic navbar that causes issues, this fixes the issue, albeit the page scroll animation becomes a bit crappy
     // https://stackoverflow.com/questions/37112218/css3-100vh-not-constant-in-mobile-browser
@@ -151,15 +149,14 @@ nav#left-sidebar {
     @media (min-width: 600px) {
         // Makes it look kinda pretty instead of filling the entire screen
         // However we will only apply if the screen size lets us do this without looking weird or ugly
-        max-width: 350px;
+        max-width: 360px;
     }
 
     // Used for mobile
     &.is-open {
         visibility: visible;
-        top: 0;
         left: 0%;
-        box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 10px; // Shadow
         transform: translate(0%);
     }
 
@@ -178,7 +175,7 @@ nav#left-sidebar {
         position: sticky;
         top: 0; // These two are REQUIRED for sticky position to work
         left: 0;
-        box-shadow: rgba(0, 101, 255, 0.7) 0px 0px 15px; // Shadow
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px; // Shadow
     }
 
     > .entries {
@@ -187,19 +184,38 @@ nav#left-sidebar {
         height: 100%;
         overflow: auto;
         scrollbar-width: thin; // Firefox only for now
-        scrollbar-color: #00c3ff #004ec8; // Also only available in Firefox
+        scrollbar-color: #00c3ff #f2f3f5; // Also only available in Firefox
 
-        hr.divider {
+        > .divider {
             width: 100%;
-            border: 1px solid #ffffff57;
+            border: 1px solid #ebedef;
         }
 
         > .category {
-            font-weight: bold;
+            font-weight: 1000;
+            color: var(--loritta-blue);
             text-transform: uppercase;
             font-size: 18px;
             margin-top: 0.25em;
             margin-bottom: 0.25em;
+
+            // Clamp lines to avoid line breaks
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        > .guild-icon-wrapper {
+            display: flex;
+            justify-content: center;
+
+            img {
+                border-radius: 100%;
+                width: 160px;
+                height: 160px;
+                background-color: #c8c8c8;
+            }
         }
 
         // Can be nested within a div
@@ -216,20 +232,48 @@ nav#left-sidebar {
             margin-top: 0.2em;
             margin-bottom: 0.2em;
             font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
 
             &:hover {
                 opacity: 1;
             }
 
             > .icon {
+                width: 24px;
                 height: 24px;
                 display: block;
             }
         }
+
+        > .loritta-logo {
+            font-family: Pacifico;
+            font-size: 3em;
+            text-align: center;
+            display: block;
+            line-height: 1;
+            margin: 0;
+            color: var(--loritta-blue);
+            font-weight: normal;
+        }
+
+        > .guild-name {
+            font-family: "Lato", "Arial", "sans-serif";
+            font-size: 1.5em;
+            text-align: center;
+            display: block;
+            margin: 0;
+            color: var(--loritta-blue);
+            font-weight: 1000;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     }
 
     > .user-info-wrapper {
-        background: rgba(0, 0, 0, 0) linear-gradient(rgb(0, 79, 201) 0%, rgb(0, 69, 176) 100%) repeat scroll 0% 0%;
+        background: #ebedef;
         height: 60px;
 
         > .user-info {
@@ -245,6 +289,7 @@ nav#left-sidebar {
             > img {
                 // Avatar Icon
                 height: 32px;
+                width: 32px;
                 border-radius: 50%;
             }
 
@@ -262,29 +307,94 @@ nav#left-sidebar {
                     font-size: 0.75em;
                 }
             }
-            
+
         }
     }
 }
 
-section#right-sidebar {    
-    padding-left: 1em;
-    padding-right: 1em;
+section#right-sidebar {
     overflow: auto;
     width: 100%;
     // 50px = Navbar
     height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: row;
+
+    @include bp('medium') {
+        width: calc(100% - 160px);
+    }
 
     // We don't need to reserve the 50px if we aren't showing the navbar!
     @include bp('medium') {
         height: 100vh;
     }
 
-    >#content {
+    @media (max-width: 1279px) {
+        margin-top: 50px;
+    }
+
+    >.content {
         width: 100%;
         max-width: 70em;
         margin-left: auto;
         margin-right: auto;
+        line-height: 1.58;
+        padding-left: 5em;
+        padding-right: 5em;
+        padding-top: 1em;
+        padding-bottom: 1em;
+
+        @media (max-width: 500px) {
+            padding-left: 1em;
+            padding-right: 1em;
+        }
+
+        hr {
+            box-sizing: content-box;
+            background: rgba(0, 0, 0, 0.05);
+            border: 0;
+            height: 1px;
+        }
+
+        // STATIC
+        .hero-image {
+            max-height: 350px;
+            width: 100%;
+            object-fit: contain;
+            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+        }
+
+        // ANIMATED
+        .hero-web-animation {
+            height: 350px;
+            width: 100%;
+            object-fit: contain;
+            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+            mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+
+            > div {
+                height: 100%;
+            }
+
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    >#content {
+        margin: 1em;
+    }
+
+    @include bp('medium') {
+        >#content {
+            width: 100%;
+            max-width: 70em;
+            margin-left: auto;
+            margin-right: auto;
+        }
     }
 }
 
