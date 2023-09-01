@@ -32,24 +32,50 @@ class FanArtsView(
 ) : DashboardView(m, i18nContext, title, pathWithoutLocaleId, dssBaseUrl, namespace) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         div {
+            id = "fan-arts-grid"
+
             form(method = FormMethod.get, action = "/${i18nContext.websiteLocaleIdPath}/fan-arts") {
-                id = "fan-arts-grid"
                 attributes["hx-target"] = "#fan-arts-grid-and-pagination"
                 attributes["hx-get"] = action
                 attributes["hx-push-url"] = "true"
 
+                // Reset when changing the filter
+                input(InputType.hidden) {
+                    name = "page"
+                    value = "1"
+                }
+
                 fanArtFilters(m, i18nContext, fanArtSortOrder, fanArtTags)
-
-                hr {}
-
-                apply(fanArtGrid())
             }
+
+            hr {}
+
+            apply(fanArtGrid())
         }
     }
 
     fun fanArtGrid(): FlowContent.() -> (Unit) = {
-        div {
+        form(method = FormMethod.get, action = "/${i18nContext.websiteLocaleIdPath}/fan-arts") {
+            attributes["hx-target"] = "#fan-arts-grid-and-pagination"
+            attributes["hx-get"] = action
+            attributes["hx-push-url"] = "true"
+
             id = "fan-arts-grid-and-pagination"
+
+            // Keep current filters
+            input(InputType.hidden) {
+                name = "sort"
+                value = fanArtSortOrder.name
+            }
+
+            if (fanArtTags != null) {
+                for (tag in fanArtTags) {
+                    input(InputType.hidden) {
+                        name = "tags"
+                        value = tag.name
+                    }
+                }
+            }
 
             div {
                 style =

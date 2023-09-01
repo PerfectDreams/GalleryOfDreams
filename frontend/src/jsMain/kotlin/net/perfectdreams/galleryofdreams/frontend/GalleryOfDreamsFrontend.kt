@@ -28,26 +28,44 @@ class GalleryOfDreamsFrontend {
     val leftSidebarMobileElement: HTMLElement
         get() = document.querySelector("#mobile-left-sidebar") as HTMLElement
 
+    private fun openSidebar() {
+        leftSidebarElement.addClass("is-open")
+        leftSidebarMobileElement.addClass("is-open")
+        leftSidebarElement.removeClass("is-closed")
+        leftSidebarMobileElement.removeClass("is-closed")
+    }
+
+    private fun closeSidebar() {
+        leftSidebarElement.removeClass("is-open")
+        leftSidebarMobileElement.removeClass("is-open")
+        leftSidebarElement.addClass("is-closed")
+        leftSidebarMobileElement.addClass("is-closed")
+    }
+
+    private fun toggleSidebar() {
+        if (!isLeftSidebarOpen) {
+            openSidebar()
+        } else {
+            closeSidebar()
+        }
+
+        isLeftSidebarOpen = !isLeftSidebarOpen
+    }
+
     fun start() {
         document.addEventListener("htmx:load", { elt ->
             val targetElement = elt.asDynamic().target as HTMLElement
 
             val hamburgerButton = targetElement.querySelector("#hamburger-button")
             hamburgerButton?.addEventListener("click", {
-                if (isLeftSidebarOpen) {
-                    leftSidebarElement.removeClass("is-open")
-                    leftSidebarMobileElement.removeClass("is-open")
-                    leftSidebarElement.addClass("is-closed")
-                    leftSidebarMobileElement.addClass("is-closed")
-                } else {
-                    leftSidebarElement.addClass("is-open")
-                    leftSidebarMobileElement.addClass("is-open")
-                    leftSidebarElement.removeClass("is-closed")
-                    leftSidebarMobileElement.removeClass("is-closed")
-                }
-
-                isLeftSidebarOpen = !isLeftSidebarOpen
+                toggleSidebar()
             })
+
+            document.querySelectorAll("[power-close-sidebar='true']").asList().forEach {
+                it.addEventListener("click", {
+                    closeSidebar()
+                })
+            }
 
             targetElement.querySelectorAll("select").asList().forEach {
                 if (it is HTMLSelectElement) {

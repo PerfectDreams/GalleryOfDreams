@@ -3,6 +3,8 @@ package net.perfectdreams.galleryofdreams.backend.views
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.html.*
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.components.fanArtCard
 import net.perfectdreams.galleryofdreams.backend.components.fanArtFilters
@@ -37,27 +39,55 @@ class ArtistFanArtsView(
 ) : DashboardView(m, i18nContext, title, pathWithoutLocaleId, dssBaseUrl, namespace) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         div {
+            id = "fan-arts-wrapper"
+            
+            h1 {
+                text(fanArtArtist.name)
+            }
+
             form(method = FormMethod.get, action = "/${i18nContext.websiteLocaleIdPath}/artists/$artistSlug") {
-                id = "fan-arts-wrapper"
                 attributes["hx-target"] = "#fan-arts-grid-and-pagination"
                 attributes["hx-get"] = action
                 attributes["hx-push-url"] = "true"
 
-                h1 {
-                    text(fanArtArtist.name)
+                // Reset when changing the filter
+                input(InputType.hidden) {
+                    name = "page"
+                    value = "1"
                 }
 
                 fanArtFilters(m, i18nContext, fanArtSortOrder, fanArtTags)
-
-                hr {}
-
-                apply(fanArtGrid())
             }
+
+            hr {}
+
+            apply(fanArtGrid())
         }
     }
 
     fun fanArtGrid(): FlowContent.() -> (Unit) = {
-        div {
+        form(method = FormMethod.get, action = "/${i18nContext.websiteLocaleIdPath}/artists/$artistSlug") {
+            attributes["hx-target"] = "#fan-arts-grid-and-pagination"
+            attributes["hx-get"] = action
+            attributes["hx-push-url"] = "true"
+
+            id = "fan-arts-grid-and-pagination"
+
+            // Keep current filters
+            input(InputType.hidden) {
+                name = "sort"
+                value = fanArtSortOrder.name
+            }
+
+            if (fanArtTags != null) {
+                for (tag in fanArtTags) {
+                    input(InputType.hidden) {
+                        name = "tags"
+                        value = tag.name
+                    }
+                }
+            }
+
             id = "fan-arts-grid-and-pagination"
 
             div {

@@ -30,6 +30,7 @@ fun FlowContent.fanArtArtist(
 
             div {
                 style = "display: flex; flex-direction: column;"
+                attributes["power-close-sidebar"] = "true"
 
                 div {
                     text(artist.name)

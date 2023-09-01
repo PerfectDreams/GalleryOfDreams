@@ -2,6 +2,8 @@ package net.perfectdreams.galleryofdreams.backend.components
 
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.utils.FanArtSortOrder
 import net.perfectdreams.galleryofdreams.backend.utils.icon
