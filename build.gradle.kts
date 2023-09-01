@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform") version Versions.KOTLIN apply false
     kotlin("plugin.serialization") version Versions.KOTLIN apply false
-    id("org.jetbrains.compose") version "1.4.3" apply false // 1.2.0-alpha01-dev750 supports Kotlin 1.7.10
+    id("org.jetbrains.compose") version "1.5.0" apply false
 }
 
 allprojects {
