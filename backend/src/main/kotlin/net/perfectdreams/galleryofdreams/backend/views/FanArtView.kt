@@ -36,7 +36,7 @@ class FanArtView(
 ) : DashboardView(m, i18nContext, title, pathWithoutLocaleId, dssBaseUrl, namespace) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         val extension = MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)
-        val url = "$dssBaseUrl/${this@FanArtView.namespace}/fan-arts/${fanArt.file}.$extension"
+        val url = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${fanArt.file}"
         a(href = url) {
             img(src = url) {
                 style = "max-width: 100%; max-height: 100%; height: 75vh; display: block; margin-left: auto; margin-right: auto; object-fit: contain;"
@@ -46,7 +46,7 @@ class FanArtView(
         }
 
         div(classes = "fan-art-name-and-artist") {
-            img(src = FanArtUtils.getArtistAvatarUrl(dssBaseUrl, this@FanArtView.namespace, fanArtArtist, 64)) {
+            img(src = FanArtUtils.getArtistAvatarUrl(fanArtArtist, 64)) {
                 style = "object-fit: cover; border-radius: 100%;"
                 width = "64"
                 height = "64"

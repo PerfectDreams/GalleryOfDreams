@@ -32,7 +32,7 @@ fun FlowContent.fanArtCard(m: GalleryOfDreamsBackend, i18nContext: I18nContext, 
                     }
 
                     div(classes = "fan-art-avatar-artist-and-date") {
-                        img(src = FanArtUtils.getArtistAvatarUrl(dssBaseUrl, namespace, fanArtArtist, 32)) {
+                        img(src = FanArtUtils.getArtistAvatarUrl(fanArtArtist, 32)) {
                             style = "object-fit: cover; border-radius: 100%;"
                             width = "32"
                             height = "32"
@@ -59,8 +59,7 @@ fun FlowContent.fanArtCard(m: GalleryOfDreamsBackend, i18nContext: I18nContext, 
             }
         }
 
-        val extension = MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)
-        img(src = "$dssBaseUrl/$namespace/fan-arts/${fanArt.file}.$extension") {
+        img(src = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${fanArt.file}") {
             style = "width: 100%; height: 100%; object-fit: cover;"
             attributes["loading"] = "lazy"
             alt = i18nContext.get(I18nKeysData.FanArtBy(fanArtArtist.name))

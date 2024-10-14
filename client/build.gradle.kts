@@ -8,10 +8,10 @@ repositories {
     mavenCentral()
 }
 
+kotlin.jvmToolchain(21)
+
 kotlin {
     jvm {
-        jvmToolchain(17)
-
         withJava()
     }
 

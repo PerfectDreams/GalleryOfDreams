@@ -20,7 +20,7 @@ fun FlowContent.fanArtArtist(
         aHtmx(classes = "entry", href = "/${i18nContext.websiteLocaleIdPath}/artists/${artist.slug}", hxTarget = "#content") {
             attributes["power-close-sidebar"] = "true"
 
-            val url = FanArtUtils.getArtistAvatarUrl(dssBaseUrl, namespace, artist, 32)
+            val url = FanArtUtils.getArtistAvatarUrl(artist, 32)
 
             img(src = url) {
                 style = "object-fit: cover; border-radius: 100%;"

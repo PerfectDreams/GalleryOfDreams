@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile> {
@@ -15,6 +16,7 @@ kotlin {
         browser()
         binaries.executable()
     }
+
     sourceSets {
         val jsMain by getting {
             dependencies {
