@@ -29,8 +29,6 @@ class ArtistFanArtsView(
     i18nContext: I18nContext,
     title: String,
     pathWithoutLocaleId: String,
-    dssBaseUrl: String,
-    namespace: String,
     private val artistSlug: String,
     private val fanArtSortOrder: FanArtSortOrder,
     private val fanArtTags: List<FanArtTag>?,
@@ -38,7 +36,7 @@ class ArtistFanArtsView(
     private val fanArtArtist: FanArtArtistX,
     private val fanArts: List<FanArt>,
     private val totalFanArts: Long
-) : DashboardView(m, i18nContext, title, pathWithoutLocaleId, dssBaseUrl, namespace) {
+) : DashboardView(m, i18nContext, title, pathWithoutLocaleId) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         div {
             id = "fan-arts-wrapper"
@@ -92,7 +90,7 @@ class ArtistFanArtsView(
 
             id = "fan-arts-grid-and-pagination"
 
-            fanArtCardGrid(m, i18nContext, dssBaseUrl, this@ArtistFanArtsView.namespace, fanArts.map { FanArtArtistWithFanArt(fanArtArtist, it) })
+            fanArtCardGrid(m, i18nContext, fanArts.map { FanArtArtistWithFanArt(fanArtArtist, it) })
 
             div {
                 style = "text-align: center;"

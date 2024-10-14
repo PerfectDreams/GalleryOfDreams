@@ -29,11 +29,9 @@ class FanArtView(
     i18nContext: I18nContext,
     title: String,
     pathWithoutLocaleId: String,
-    dssBaseUrl: String,
-    namespace: String,
     private val fanArtArtist: FanArtArtistX,
     private val fanArt: FanArt
-) : DashboardView(m, i18nContext, title, pathWithoutLocaleId, dssBaseUrl, namespace) {
+) : DashboardView(m, i18nContext, title, pathWithoutLocaleId) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         val extension = MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)
         val url = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${fanArt.file}"
@@ -94,7 +92,7 @@ class FanArtView(
         meta(content = i18nContext.get(I18nKeysData.WebsiteTitle)) {
             attributes["property"] = "og:site_name"
         }
-        meta(content = m.dreamStorageServiceClient.baseUrl + "/${this@FanArtView.namespace}/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}") {
+        meta(content = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}") {
             attributes["property"] = "og:image"
         }
         meta(name = "twitter:card", content = "summary_large_image")

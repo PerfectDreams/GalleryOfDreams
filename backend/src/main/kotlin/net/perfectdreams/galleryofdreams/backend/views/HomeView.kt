@@ -11,10 +11,8 @@ class HomeView(
     m: GalleryOfDreamsBackend,
     i18nContext: I18nContext,
     title: String,
-    pathWithoutLocaleId: String,
-    dssBaseUrl: String,
-    namespace: String,
-) : DashboardView(m, i18nContext, title, pathWithoutLocaleId, dssBaseUrl, namespace) {
+    pathWithoutLocaleId: String
+) : DashboardView(m, i18nContext, title, pathWithoutLocaleId) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         div {
             style = "text-align: center;"

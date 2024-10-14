@@ -22,6 +22,8 @@ import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.inSubQuery
 
 class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{artistSlug}") {
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
@@ -33,22 +35,19 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
         val zeroIndexedPage = page - 1
 
         val fanArts = m.transaction {
-            val fanArtArtist = FanArtArtists.select {
-                FanArtArtists.slug eq artistSlug
-            }.first()
+            val fanArtArtist = FanArtArtists.selectAll().where { FanArtArtists.slug eq artistSlug }.first()
 
-            val discordSocialConnections = FanArtArtistDiscordConnections.select {
-                FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id]
-            }
-            val twitterSocialConnections = FanArtArtistTwitterConnections.select {
-                FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id]
-            }
-            val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
-                FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id]
-            }
+            val discordSocialConnections = FanArtArtistDiscordConnections.selectAll()
+                .where { FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id] }
+            val twitterSocialConnections = FanArtArtistTwitterConnections.selectAll()
+                .where { FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id] }
+            val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.selectAll()
+                .where { FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id] }
 
-            val query = FanArts.select {
-                FanArts.artist eq fanArtArtist[FanArtArtists.id] and (if (tags == null) Op.TRUE eq Op.TRUE else FanArts.id inSubQuery FanArtTags.slice(FanArtTags.fanArt).select { FanArtTags.tag inList tags })
+            val query = FanArts.selectAll().where {
+                FanArts.artist eq fanArtArtist[FanArtArtists.id] and (if (tags == null) Op.TRUE eq Op.TRUE else FanArts.id inSubQuery FanArtTags.select(
+                    FanArtTags.fanArt
+                ).where { FanArtTags.tag inList tags })
             }.orderBy(
                 FanArts.createdAt, when (sortOrder) {
                     FanArtSortOrder.DATE_ASCENDING -> SortOrder.ASC
@@ -58,7 +57,8 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
 
             // YES THE ORDER MATTERS BECAUSE THE QUERY IS MUTABLE
             val totalFanArts = query.count()
-            val fanArts = query.limit(GalleryOfDreamsBackend.FAN_ARTS_PER_PAGE, (zeroIndexedPage * 20).toLong()).toList()
+            val fanArts =
+                query.limit(GalleryOfDreamsBackend.FAN_ARTS_PER_PAGE, (zeroIndexedPage * 20).toLong()).toList()
 
             QueryResult(
                 FanArtArtistX(
@@ -73,9 +73,8 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
                     } + deviantArtSocialConnections.map {
                         DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
                     },
-                    FanArts.select {
-                        FanArts.artist eq fanArtArtist[FanArtArtists.id].value
-                    }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
+                    FanArts.selectAll().where { FanArts.artist eq fanArtArtist[FanArtArtists.id].value }
+                        .orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
                         m.convertToFanArt(it)
                     }
                 ),
@@ -89,9 +88,8 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
                         it[FanArts.dreamStorageServiceImageId],
                         it[FanArts.file],
                         it[FanArts.preferredMediaType],
-                        FanArtTags.slice(FanArtTags.tag).select {
-                            FanArtTags.fanArt eq it[FanArts.id]
-                        }.map { it[FanArtTags.tag] }
+                        FanArtTags.select(FanArtTags.tag).where { FanArtTags.fanArt eq it[FanArts.id] }
+                            .map { it[FanArtTags.tag] }
                     )
                 },
                 totalFanArts
@@ -103,8 +101,6 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
             i18nContext,
             i18nContext.get(I18nKeysData.WebsiteTitle),
             call.request.pathWithoutLocale(),
-            m.dreamStorageServiceClient.baseUrl,
-            m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve(),
             artistSlug,
             sortOrder,
             tags,

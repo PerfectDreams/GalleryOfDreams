@@ -18,16 +18,12 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.galleryofdreams.backend.plugins.configureRouting
 import net.perfectdreams.galleryofdreams.backend.routes.*
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtArtistByDiscordIdRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtsRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetLanguageInfoRoute
 import net.perfectdreams.galleryofdreams.backend.routes.api.PatchFanArtRoute
-import net.perfectdreams.galleryofdreams.backend.routes.api.PostArtistWithFanArtRoute
-import net.perfectdreams.galleryofdreams.backend.routes.api.PostCheckFanArtRoute
-import net.perfectdreams.galleryofdreams.backend.routes.api.PostFanArtRoute
 import net.perfectdreams.galleryofdreams.backend.tables.AuthorizationTokens
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtArtists
 import net.perfectdreams.galleryofdreams.backend.tables.FanArtTags
@@ -71,9 +67,6 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         GetFanArtsRoute(this),
         GetLanguageInfoRoute(this),
         GetFanArtArtistByDiscordIdRoute(this),
-        PostArtistWithFanArtRoute(this),
-        PostFanArtRoute(this),
-        PostCheckFanArtRoute(this),
         PatchFanArtRoute(this)
     )
 
@@ -97,11 +90,6 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
             this.socketTimeoutMillis = 120_000
         }
     }
-    val dreamStorageServiceClient = DreamStorageServiceClient(
-        System.getenv("GALLERYOFDREAMS_DSS_URL"),
-        System.getenv("GALLERYOFDREAMS_DSS_TOKEN"),
-        http
-    )
 
     private val typesToCache = listOf(
         ContentType.Text.CSS,
@@ -208,7 +196,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         Database.connect(
             HikariDataSource(dataSource),
             databaseConfig = DatabaseConfig {
-                defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+                this.defaultMaxAttempts = 5
                 defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
             }
         )
@@ -277,19 +265,14 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
                 }
 
             results.map {
-                val discordSocialConnections = FanArtArtistDiscordConnections.select {
-                    FanArtArtistDiscordConnections.artist eq it[FanArtArtists.id]
-                }
-                val twitterSocialConnections = FanArtArtistTwitterConnections.select {
-                    FanArtArtistTwitterConnections.artist eq it[FanArtArtists.id]
-                }
-                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
-                    FanArtArtistDeviantArtConnections.artist eq it[FanArtArtists.id]
-                }
+                val discordSocialConnections = FanArtArtistDiscordConnections.selectAll()
+                    .where { FanArtArtistDiscordConnections.artist eq it[FanArtArtists.id] }
+                val twitterSocialConnections = FanArtArtistTwitterConnections.selectAll()
+                    .where { FanArtArtistTwitterConnections.artist eq it[FanArtArtists.id] }
+                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.selectAll()
+                    .where { FanArtArtistDeviantArtConnections.artist eq it[FanArtArtists.id] }
 
-                val count = FanArts.select {
-                    FanArts.artist eq it[FanArtArtists.id]
-                }.count()
+                val count = FanArts.selectAll().where { FanArts.artist eq it[FanArtArtists.id] }.count()
 
                 FanArtArtistWithFanArtCount(
                     FanArtArtistX(
@@ -304,9 +287,8 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
                         } + deviantArtSocialConnections.map {
                             DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
                         },
-                        FanArts.select {
-                            FanArts.artist eq it[FanArtArtists.id].value
-                        }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
+                        FanArts.selectAll().where { FanArts.artist eq it[FanArtArtists.id].value }
+                            .orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
                             convertToFanArt(it)
                         }
                     ),
@@ -325,9 +307,8 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         fanArt[FanArts.dreamStorageServiceImageId],
         fanArt[FanArts.file],
         fanArt[FanArts.preferredMediaType],
-        FanArtTags.slice(FanArtTags.tag).select {
-            FanArtTags.fanArt eq fanArt[FanArts.id]
-        }.map { it[FanArtTags.tag] }
+        FanArtTags.select(FanArtTags.tag).where { FanArtTags.fanArt eq fanArt[FanArts.id] }
+            .map { it[FanArtTags.tag] }
     )
 
     fun <T:Any> execAndMap(string: String, transform : (ResultSet) -> T) : List<T> {

@@ -34,28 +34,26 @@ import net.perfectdreams.galleryofdreams.common.data.FanArtArtistX
 import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
-import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 
 class GetFanArtRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{artistSlug}/{fanArtSlug}") {
     override suspend fun onLocalizedRequest(call: ApplicationCall, i18nContext: I18nContext) {
         val fanArtAndArtist = m.transaction {
             val data = FanArts.innerJoin(FanArtArtists)
-                .select { FanArtArtists.slug eq call.parameters.getOrFail("artistSlug") and (FanArts.slug eq call.parameters.getOrFail("fanArtSlug")) }
+                .selectAll().where {
+                    FanArtArtists.slug eq call.parameters.getOrFail("artistSlug") and (FanArts.slug eq call.parameters.getOrFail(
+                        "fanArtSlug"
+                    ))
+                }
                 .first()
 
-            val discordSocialConnections = FanArtArtistDiscordConnections.select {
-                FanArtArtistDiscordConnections.artist eq data[FanArtArtists.id]
-            }
-            val twitterSocialConnections = FanArtArtistTwitterConnections.select {
-                FanArtArtistTwitterConnections.artist eq data[FanArtArtists.id]
-            }
-            val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
-                FanArtArtistDeviantArtConnections.artist eq data[FanArtArtists.id]
-            }
+            val discordSocialConnections = FanArtArtistDiscordConnections.selectAll()
+                .where { FanArtArtistDiscordConnections.artist eq data[FanArtArtists.id] }
+            val twitterSocialConnections = FanArtArtistTwitterConnections.selectAll()
+                .where { FanArtArtistTwitterConnections.artist eq data[FanArtArtists.id] }
+            val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.selectAll()
+                .where { FanArtArtistDeviantArtConnections.artist eq data[FanArtArtists.id] }
 
             FanArtArtistWithFanArt(
                 FanArtArtistX(
@@ -70,9 +68,8 @@ class GetFanArtRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{a
                     } + deviantArtSocialConnections.map {
                         DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
                     },
-                    FanArts.select {
-                        FanArts.artist eq data[FanArtArtists.id].value
-                    }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
+                    FanArts.selectAll().where { FanArts.artist eq data[FanArtArtists.id].value }
+                        .orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
                         m.convertToFanArt(it)
                     }
                 ),
@@ -85,8 +82,6 @@ class GetFanArtRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/artists/{a
             i18nContext,
             i18nContext.get(I18nKeysData.WebsiteTitle),
             call.request.pathWithoutLocale(),
-            m.dreamStorageServiceClient.baseUrl,
-            m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve(),
             fanArtAndArtist.fanArtArtist,
             fanArtAndArtist.fanArt
         )

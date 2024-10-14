@@ -19,9 +19,7 @@ class GetHomeRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/") {
             m,
             i18nContext,
             i18nContext.get(I18nKeysData.WebsiteTitle),
-            call.request.pathWithoutLocale(),
-            m.dreamStorageServiceClient.baseUrl,
-            m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve(),
+            call.request.pathWithoutLocale()
         )
 
         when (call.htmxElementTarget) {

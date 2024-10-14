@@ -13,7 +13,7 @@ import net.perfectdreams.galleryofdreams.common.data.FanArtArtistX
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.i18nhelper.core.I18nContext
 
-fun FlowContent.fanArtCard(m: GalleryOfDreamsBackend, i18nContext: I18nContext, dssBaseUrl: String, namespace: String, fanArtArtist: FanArtArtistX, fanArt: FanArt) {
+fun FlowContent.fanArtCard(m: GalleryOfDreamsBackend, i18nContext: I18nContext, fanArtArtist: FanArtArtistX, fanArt: FanArt) {
     aHtmx(classes = "fan-art-card", href = "/${i18nContext.websiteLocaleIdPath}/artists/${fanArtArtist.slug}/${fanArt.slug}", hxTarget = "#content") {
         div(classes = "fan-art-info-card") {
             div(classes = "fan-art-tags") {

@@ -9,7 +9,11 @@ import net.perfectdreams.galleryofdreams.backend.GalleryOfDreamsBackend
 import net.perfectdreams.galleryofdreams.backend.tables.AuthorizationTokens
 import net.perfectdreams.galleryofdreams.backend.utils.AuthorizationToken
 import net.perfectdreams.sequins.ktor.BaseRoute
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 abstract class RequiresAPIAuthenticationRoute(val m: GalleryOfDreamsBackend, path: String) : BaseRoute(path) {
     companion object {
@@ -29,7 +33,7 @@ abstract class RequiresAPIAuthenticationRoute(val m: GalleryOfDreamsBackend, pat
         }
 
         val validKey = m.transaction {
-            AuthorizationTokens.select { AuthorizationTokens.token eq auth }.firstOrNull()
+            AuthorizationTokens.selectAll().where { AuthorizationTokens.token eq auth }.firstOrNull()
         }
 
         logger.trace { "$auth is trying to access $path (${clazzName}), using key $validKey" }

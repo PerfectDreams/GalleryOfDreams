@@ -24,32 +24,28 @@ dependencies {
     implementation("org.jsoup:jsoup:1.16.1")
 
     // Databases
-    implementation("org.jetbrains.exposed:exposed-core:0.37.3")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.37.3")
-    implementation("org.jetbrains.exposed:exposed-dao:0.37.3")
-    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.36.2")
-    implementation("org.postgresql:postgresql:42.3.3")
-    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.jetbrains.exposed:exposed-core:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-json:0.55.0")
+    implementation("org.postgresql:postgresql:42.7.4")
+    implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
-    implementation("net.perfectdreams.dreamstorageservice:client:2.0.2")
-    implementation("pw.forst", "exposed-upsert", "1.1.0")
 
     // Caching
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.5")
 
     // Internationalization + LanguageManager
     api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:${Versions.I18N_HELPER}")
-    implementation("com.charleskorn.kaml:kaml:0.35.0")
+    implementation("com.charleskorn.kaml:kaml:0.61.0")
     implementation("com.ibm.icu:icu4j:71.1")
-    implementation("org.yaml:snakeyaml:1.30")
+    implementation("org.yaml:snakeyaml:2.3")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
 
     // https://mvnrepository.com/artifact/club.minnced/discord-webhooks
-    implementation("club.minnced:discord-webhooks:0.8.2")
-
-    testImplementation("io.ktor:ktor-server-tests:${Versions.KTOR}")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.5.31")
+    implementation("club.minnced:discord-webhooks:0.8.4")
 }
 
 jib {

@@ -18,35 +18,36 @@ import net.perfectdreams.galleryofdreams.common.data.FanArt
 import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
 import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.sequins.ktor.BaseRoute
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 class GetFanArtArtistByDiscordIdRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v1/social/discord/{discordId}") {
     override suspend fun onRequest(call: ApplicationCall) {
         val discordId = call.parameters.getOrFail("discordId").toLong()
 
         val artistData = m.transaction {
-            val discordConnectionArtistId = FanArtArtistDiscordConnections.select { FanArtArtistDiscordConnections.discordId eq discordId }
+            val discordConnectionArtistId = FanArtArtistDiscordConnections.selectAll()
+                .where { FanArtArtistDiscordConnections.discordId eq discordId }
                 .limit(1)
                 .firstOrNull() ?: return@transaction null
 
             val fanArtArtist = FanArtArtists
-                .select { FanArtArtists.id eq discordConnectionArtistId[FanArtArtistDiscordConnections.artist] }
+                .selectAll()
+                .where { FanArtArtists.id eq discordConnectionArtistId[FanArtArtistDiscordConnections.artist] }
                 .limit(1)
                 .first()
 
-            val discordSocialConnections = FanArtArtistDiscordConnections.select {
-                FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id]
-            }
-            val twitterSocialConnections = FanArtArtistTwitterConnections.select {
-                FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id]
-            }
-            val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
-                FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id]
-            }
+            val discordSocialConnections = FanArtArtistDiscordConnections.selectAll()
+                .where { FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id] }
+            val twitterSocialConnections = FanArtArtistTwitterConnections.selectAll()
+                .where { FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id] }
+            val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.selectAll()
+                .where { FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id] }
 
-            val fanArts = FanArts.select {
-                FanArts.artist eq fanArtArtist[FanArtArtists.id]
-            }.map {
+            val fanArts = FanArts.selectAll().where { FanArts.artist eq fanArtArtist[FanArtArtists.id] }.map {
                 FanArt(
                     it[FanArts.id].value,
                     it[FanArts.slug],
@@ -56,9 +57,7 @@ class GetFanArtArtistByDiscordIdRoute(private val m: GalleryOfDreamsBackend) : B
                     it[FanArts.dreamStorageServiceImageId],
                     it[FanArts.file],
                     it[FanArts.preferredMediaType],
-                    FanArtTags.select {
-                        FanArtTags.fanArt eq it[FanArts.id]
-                    }.map {
+                    FanArtTags.selectAll().where { FanArtTags.fanArt eq it[FanArts.id] }.map {
                         it[FanArtTags.tag]
                     },
                 )

@@ -35,13 +35,10 @@ class PostFanArtArtistsSearchRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m
 
         val results = m.searchFanArtArtists(sort, query, GalleryOfDreamsBackend.ARTIST_LIST_COUNT_PER_QUERY, offset)
 
-        val baseUrl = m.dreamStorageServiceClient.baseUrl
-        val namespace = m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve()
-
         call.respondHtml {
             body {
                 for (fanArtArtist in results) {
-                    fanArtArtist(i18nContext, baseUrl, namespace, fanArtArtist.fanArtArtist, fanArtArtist.fanArtCount)
+                    fanArtArtist(i18nContext, fanArtArtist.fanArtArtist, fanArtArtist.fanArtCount)
                 }
 
                 if (results.size == GalleryOfDreamsBackend.ARTIST_LIST_COUNT_PER_QUERY) {

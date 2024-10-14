@@ -23,14 +23,12 @@ class FanArtsView(
     i18nContext: I18nContext,
     title: String,
     pathWithoutLocaleId: String,
-    dssBaseUrl: String,
-    namespace: String,
     private val fanArtSortOrder: FanArtSortOrder,
     private val fanArtTags: List<FanArtTag>?,
     private val page: Int,
     private val fanArts: List<FanArtArtistWithFanArt>,
     private val totalFanArts: Long
-) : DashboardView(m, i18nContext, title, pathWithoutLocaleId, dssBaseUrl, namespace) {
+) : DashboardView(m, i18nContext, title, pathWithoutLocaleId) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
         div {
             id = "fan-arts-grid"
@@ -78,7 +76,7 @@ class FanArtsView(
                 }
             }
 
-            fanArtCardGrid(m, i18nContext, dssBaseUrl, this@FanArtsView.namespace, fanArts)
+            fanArtCardGrid(m, i18nContext, fanArts)
 
             div {
                 style = "text-align: center;"

@@ -30,8 +30,8 @@ class GetFanArtsListRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/fan-a
         val zeroIndexedPage = page - 1
 
         val result = m.transaction {
-            val query = FanArts.select {
-                (if (tags == null) Op.TRUE eq Op.TRUE else FanArts.id inSubQuery FanArtTags.slice(FanArtTags.fanArt).select { FanArtTags.tag inList tags })
+            val query = FanArts.selectAll().where {
+                (if (tags == null) Op.TRUE eq Op.TRUE else FanArts.id inSubQuery FanArtTags.select(FanArtTags.fanArt).where { FanArtTags.tag inList tags })
             }.orderBy(
                 FanArts.createdAt, when (sortOrder) {
                     FanArtSortOrder.DATE_ASCENDING -> SortOrder.ASC
@@ -41,24 +41,21 @@ class GetFanArtsListRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/fan-a
 
             // YES THE ORDER MATTERS BECAUSE THE QUERY IS MUTABLE
             val totalFanArts = query.count()
-            val fanArts = query.limit(GalleryOfDreamsBackend.FAN_ARTS_PER_PAGE, (zeroIndexedPage * 20).toLong()).toList()
+            val fanArts =
+                query.limit(GalleryOfDreamsBackend.FAN_ARTS_PER_PAGE, (zeroIndexedPage * 20).toLong()).toList()
 
             val mappedFanArts = mutableListOf<FanArtArtistWithFanArt>()
 
             for (fanArt in fanArts) {
-                val fanArtArtist = FanArtArtists.select {
-                    FanArtArtists.id eq fanArt[FanArts.artist]
-                }.first()
+                val fanArtArtist =
+                    FanArtArtists.selectAll().where { FanArtArtists.id eq fanArt[FanArts.artist] }.first()
 
-                val discordSocialConnections = FanArtArtistDiscordConnections.select {
-                    FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
-                val twitterSocialConnections = FanArtArtistTwitterConnections.select {
-                    FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
-                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
-                    FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
+                val discordSocialConnections = FanArtArtistDiscordConnections.selectAll()
+                    .where { FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id] }
+                val twitterSocialConnections = FanArtArtistTwitterConnections.selectAll()
+                    .where { FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id] }
+                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.selectAll()
+                    .where { FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id] }
 
                 mappedFanArts.add(
                     FanArtArtistWithFanArt(
@@ -74,9 +71,8 @@ class GetFanArtsListRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/fan-a
                             } + deviantArtSocialConnections.map {
                                 DeviantArtSocialConnection(it[FanArtArtistDeviantArtConnections.handle])
                             },
-                            FanArts.select {
-                                FanArts.artist eq fanArtArtist[FanArtArtists.id].value
-                            }.orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
+                            FanArts.selectAll().where { FanArts.artist eq fanArtArtist[FanArtArtists.id].value }
+                                .orderBy(FanArts.createdAt, SortOrder.DESC).limit(1).firstOrNull()?.let {
                                 m.convertToFanArt(it)
                             }
                         ),
@@ -96,8 +92,6 @@ class GetFanArtsListRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/fan-a
             i18nContext,
             i18nContext.get(I18nKeysData.WebsiteTitle),
             call.request.pathWithoutLocale(),
-            m.dreamStorageServiceClient.baseUrl,
-            m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve(),
             sortOrder,
             tags,
             page,

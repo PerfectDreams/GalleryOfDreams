@@ -15,9 +15,8 @@ import net.perfectdreams.galleryofdreams.backend.tables.FanArts
 import net.perfectdreams.galleryofdreams.backend.utils.AuthorizationToken
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.respondJson
 import net.perfectdreams.galleryofdreams.common.data.api.PatchFanArtRequest
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class PatchFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRoute(m, "/api/v1/fan-arts/{fanArtSlug}") {
     override suspend fun onAuthenticatedRequest(call: ApplicationCall, token: AuthorizationToken) {
@@ -31,7 +30,7 @@ class PatchFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticationRou
             // To do this, we will remove all current tags and reinsert them!
             m.transaction {
                 // Get the fan art
-                val fanArt = FanArts.select { FanArts.slug eq fanArtSlug }
+                val fanArt = FanArts.selectAll().where { FanArts.slug eq fanArtSlug }
                     .limit(1)
                     .firstOrNull() ?: return@transaction false
 

@@ -18,9 +18,7 @@ abstract class DashboardView(
     val m: GalleryOfDreamsBackend,
     val i18nContext: I18nContext,
     val title: String,
-    val pathWithoutLocaleId: String,
-    val dssBaseUrl: String,
-    val namespace: String,
+    val pathWithoutLocaleId: String
 ) {
     fun generateHtml(totalFanArtCount: Long, fanArtistsSidebar: List<FanArtArtistWithFanArtCount>): HTML.() -> (Unit) = {
         attributes["lang"] = i18nContext.get(I18nKeysData.WebsiteLocaleIdPath)
@@ -28,8 +26,8 @@ abstract class DashboardView(
         head {
             meta(charset = "utf-8")
             meta(name = "viewport", content = "width=device-width, initial-scale=1, viewport-fit=cover")
-            // We are sure that we will access the DreamStorageService URL, so let's preconnect!
-            link(href = m.dreamStorageServiceClient.baseUrl, rel = "preconnect")
+            // We are sure that we will access the EtherealGambi URL, so let's preconnect!
+            link(href = "https://assets.perfectdreams.media/", rel = "preconnect")
 
             title(this@DashboardView.title)
 
@@ -178,7 +176,7 @@ abstract class DashboardView(
                                 id = "fan-art-artists"
 
                                 for (fanArtist in fanArtistsSidebar) {
-                                    fanArtArtist(i18nContext, dssBaseUrl, this@DashboardView.namespace, fanArtist.fanArtArtist, fanArtist.fanArtCount)
+                                    fanArtArtist(i18nContext, fanArtist.fanArtArtist, fanArtist.fanArtCount)
                                 }
 
                                 div {

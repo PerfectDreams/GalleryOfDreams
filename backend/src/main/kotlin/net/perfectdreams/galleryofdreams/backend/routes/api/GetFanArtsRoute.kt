@@ -24,6 +24,9 @@ import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.codec.digest.DigestUtils
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -32,8 +35,6 @@ import java.sql.ResultSet
 
 class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v1/fan-arts") {
     override suspend fun onRequest(call: ApplicationCall) {
-        val namespace = m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve()
-
         val result = m.transaction {
             // Calculate md5 hash of the elements, used for the ETag (Cache Busting)
             // This also has the advantage of being waaaay faster than the query below, so if the hash matches it will be way faster :3
@@ -53,19 +54,14 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
             }
 
             val fanArtArtists = FanArtArtists.selectAll().map { fanArtArtist ->
-                val discordSocialConnections = FanArtArtistDiscordConnections.select {
-                    FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
-                val twitterSocialConnections = FanArtArtistTwitterConnections.select {
-                    FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
-                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
-                    FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
+                val discordSocialConnections = FanArtArtistDiscordConnections.selectAll()
+                    .where { FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id] }
+                val twitterSocialConnections = FanArtArtistTwitterConnections.selectAll()
+                    .where { FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id] }
+                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.selectAll()
+                    .where { FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id] }
 
-                val fanArts = FanArts.select {
-                    FanArts.artist eq fanArtArtist[FanArtArtists.id]
-                }.map {
+                val fanArts = FanArts.selectAll().where { FanArts.artist eq fanArtArtist[FanArtArtists.id] }.map {
                     FanArt(
                         it[FanArts.id].value,
                         it[FanArts.slug],
@@ -75,9 +71,7 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
                         it[FanArts.dreamStorageServiceImageId],
                         it[FanArts.file],
                         it[FanArts.preferredMediaType],
-                        FanArtTags.select {
-                            FanArtTags.fanArt eq it[FanArts.id]
-                        }.map {
+                        FanArtTags.selectAll().where { FanArtTags.fanArt eq it[FanArts.id] }.map {
                             it[FanArtTags.tag]
                         },
                     )
@@ -102,8 +96,8 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
             Pair(
                 GalleryOfDreamsDataResponse(
                     DreamStorageServiceData(
-                        m.dreamStorageServiceClient.baseUrl,
-                        namespace
+                        "unused",
+                        "unused"
                     ),
                     fanArtArtists
                 ),

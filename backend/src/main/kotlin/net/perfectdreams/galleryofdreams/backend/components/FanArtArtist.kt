@@ -11,8 +11,6 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 
 fun FlowContent.fanArtArtist(
     i18nContext: I18nContext,
-    dssBaseUrl: String,
-    namespace: String,
     artist: FanArtArtistX,
     fanArtCount: Long
 ) {

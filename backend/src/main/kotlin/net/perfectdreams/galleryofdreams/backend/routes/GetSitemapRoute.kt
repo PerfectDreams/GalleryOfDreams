@@ -19,6 +19,9 @@ import net.perfectdreams.galleryofdreams.common.data.FanArtArtist
 import net.perfectdreams.galleryofdreams.common.data.TwitterSocialConnection
 import net.perfectdreams.galleryofdreams.common.i18n.I18nKeysData
 import net.perfectdreams.sequins.ktor.BaseRoute
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.io.StringWriter
@@ -38,8 +41,6 @@ class GetSitemapRoute(val m: GalleryOfDreamsBackend) : BaseRoute("/sitemap.xml")
     }
 
     override suspend fun onRequest(call: ApplicationCall) {
-        val namespace = m.dreamStorageServiceClient.getCachedNamespaceOrRetrieve()
-
         val docFactory: DocumentBuilderFactory = DocumentBuilderFactory.newInstance()
             .apply {
                 // https://stackoverflow.com/a/41538813/7271796
@@ -49,19 +50,14 @@ class GetSitemapRoute(val m: GalleryOfDreamsBackend) : BaseRoute("/sitemap.xml")
         // TODO: Move this somewhere else
         val fanArtArtistsData = m.transaction {
             val fanArtArtists = FanArtArtists.selectAll().map { fanArtArtist ->
-                val discordSocialConnections = FanArtArtistDiscordConnections.select {
-                    FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
-                val twitterSocialConnections = FanArtArtistTwitterConnections.select {
-                    FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
-                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.select {
-                    FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id]
-                }
+                val discordSocialConnections = FanArtArtistDiscordConnections.selectAll()
+                    .where { FanArtArtistDiscordConnections.artist eq fanArtArtist[FanArtArtists.id] }
+                val twitterSocialConnections = FanArtArtistTwitterConnections.selectAll()
+                    .where { FanArtArtistTwitterConnections.artist eq fanArtArtist[FanArtArtists.id] }
+                val deviantArtSocialConnections = FanArtArtistDeviantArtConnections.selectAll()
+                    .where { FanArtArtistDeviantArtConnections.artist eq fanArtArtist[FanArtArtists.id] }
 
-                val fanArts = FanArts.select {
-                    FanArts.artist eq fanArtArtist[FanArtArtists.id]
-                }.map {
+                val fanArts = FanArts.selectAll().where { FanArts.artist eq fanArtArtist[FanArtArtists.id] }.map {
                     FanArt(
                         it[FanArts.id].value,
                         it[FanArts.slug],
@@ -71,9 +67,7 @@ class GetSitemapRoute(val m: GalleryOfDreamsBackend) : BaseRoute("/sitemap.xml")
                         it[FanArts.dreamStorageServiceImageId],
                         it[FanArts.file],
                         it[FanArts.preferredMediaType],
-                        FanArtTags.select {
-                            FanArtTags.fanArt eq it[FanArts.id]
-                        }.map {
+                        FanArtTags.selectAll().where { FanArtTags.fanArt eq it[FanArts.id] }.map {
                             it[FanArtTags.tag]
                         },
                     )
@@ -181,7 +175,7 @@ class GetSitemapRoute(val m: GalleryOfDreamsBackend) : BaseRoute("/sitemap.xml")
                                     doc.createElement("image:image").apply {
                                         appendChild(
                                             doc.createElement("image:loc").apply {
-                                                textContent = m.dreamStorageServiceClient.baseUrl + "/${namespace}/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}"
+                                                textContent = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}"
                                             }
                                         )
                                     }
