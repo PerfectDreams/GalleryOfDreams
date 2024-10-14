@@ -14,7 +14,6 @@ import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
-import io.ktor.server.plugins.cors.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -139,10 +138,6 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         }
 
         val server = embeddedServer(CIO, port = System.getenv("GALLERYOFDREAMS_WEBSERVER_PORT")?.toIntOrNull() ?: 8080) {
-            install(CORS) {
-                anyHost()
-            }
-
             // Enables gzip and deflate compression
             install(Compression)
 

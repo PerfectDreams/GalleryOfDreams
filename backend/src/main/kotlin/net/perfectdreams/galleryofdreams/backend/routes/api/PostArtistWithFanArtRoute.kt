@@ -2,13 +2,16 @@ package net.perfectdreams.galleryofdreams.backend.routes.api
 
 import club.minnced.discord.webhook.send.AllowedMentions
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
+import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.io.readByteArray
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
@@ -36,18 +39,35 @@ class PostArtistWithFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenti
         val (fanArtArtist, response) = withContext(Dispatchers.IO) {
             // Receive the uploaded file
             val multipart = call.receiveMultipart()
-            val parts = multipart.readAllParts()
-            val filePart = parts.first { it.name == "file" } as PartData.FileItem
-            val attributesPart = parts.first { it.name == "attributes" } as PartData.FormItem
 
-            val attributes = Json.decodeFromString<CreateArtistWithFanArtRequest>(attributesPart.value)
+            var attributesString: String? = null
+            var contentType: ContentType? = null
+            var fileToBeStored: ByteArray? = null
 
-            val fileToBeStored = filePart.streamProvider.invoke().readAllBytes()
-            val contentType = filePart.contentType ?: error("Missing Content-Type!")
+            multipart.forEachPart { part ->
+                when (part) {
+                    is PartData.FormItem -> {
+                        if (part.name == "file")
+                            attributesString = part.value
+                    }
+
+                    is PartData.FileItem -> {
+                        if (part.name == "file") {
+                            contentType = part.contentType
+                            fileToBeStored = part.provider().readRemaining().readByteArray()
+                        }
+                    }
+
+                    else -> {}
+                }
+                part.dispose()
+            }
+
+            val attributes = Json.decodeFromString<CreateArtistWithFanArtRequest>(attributesString!!)
 
             val uploadResult = m.dreamStorageServiceClient.uploadImage(
-                fileToBeStored,
-                contentType,
+                fileToBeStored!!,
+                contentType!!,
                 UploadImageRequest(false)
             )
 

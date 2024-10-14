@@ -4,6 +4,6 @@ object Versions {
     const val JIB = "3.2.1"
     const val KOTLINX_SERIALIZATION = "1.6.0"
     const val PROMETHEUS = "0.12.0"
-    const val KTOR = "2.3.3"
+    const val KTOR = "3.0.0"
     const val I18N_HELPER = "0.0.5-SNAPSHOT"
 }

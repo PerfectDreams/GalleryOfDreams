@@ -1,10 +1,13 @@
 package net.perfectdreams.galleryofdreams.backend.routes.api
 
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.http.content.*
 import io.ktor.server.request.*
+import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.io.readByteArray
 import net.perfectdreams.dreamstorageservice.data.api.CheckImageRequest
 import net.perfectdreams.dreamstorageservice.data.api.ImageDoesNotExistResponse
 import net.perfectdreams.dreamstorageservice.data.api.ImageExistsResponse
@@ -23,15 +26,33 @@ class PostCheckFanArtRoute(m: GalleryOfDreamsBackend) : RequiresAPIAuthenticatio
         val response = withContext(Dispatchers.IO) {
             // Receive the uploaded file
             val multipart = call.receiveMultipart()
-            val parts = multipart.readAllParts()
-            val filePart = parts.first { it.name == "file" } as PartData.FileItem
 
-            val fileToBeStored = filePart.streamProvider.invoke().readAllBytes()
-            val contentType = filePart.contentType ?: error("Missing Content-Type!")
+            var attributesString: String? = null
+            var contentType: ContentType? = null
+            var fileToBeStored: ByteArray? = null
+
+            multipart.forEachPart { part ->
+                when (part) {
+                    is PartData.FormItem -> {
+                        if (part.name == "file")
+                            attributesString = part.value
+                    }
+
+                    is PartData.FileItem -> {
+                        if (part.name == "file") {
+                            contentType = part.contentType
+                            fileToBeStored = part.provider().readRemaining().readByteArray()
+                        }
+                    }
+
+                    else -> {}
+                }
+                part.dispose()
+            }
 
             val checkResult = m.dreamStorageServiceClient.checkImage(
-                fileToBeStored,
-                contentType,
+                fileToBeStored!!,
+                contentType!!,
                 CheckImageRequest(false)
             )
 

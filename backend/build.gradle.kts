@@ -18,7 +18,7 @@ dependencies {
     implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
 
-    implementation("ch.qos.logback:logback-classic:1.3.0-alpha11")
+    implementation("ch.qos.logback:logback-classic:1.5.10")
     implementation("commons-codec:commons-codec:1.15")
 
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
