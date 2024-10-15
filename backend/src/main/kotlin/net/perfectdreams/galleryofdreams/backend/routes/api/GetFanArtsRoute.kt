@@ -68,7 +68,7 @@ class GetFanArtsRoute(private val m: GalleryOfDreamsBackend) : BaseRoute("/api/v
                         it[FanArts.title],
                         it[FanArts.description],
                         it[FanArts.createdAt],
-                        it[FanArts.dreamStorageServiceImageId],
+                        0, // unused
                         it[FanArts.file],
                         it[FanArts.preferredMediaType],
                         FanArtTags.selectAll().where { FanArtTags.fanArt eq it[FanArts.id] }.map {

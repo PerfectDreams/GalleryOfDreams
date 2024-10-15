@@ -18,6 +18,13 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.dv8tion.jda.api.JDABuilder
+import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.MemberCachePolicy
+import net.perfectdreams.etherealgambi.client.EtherealGambiClient
+import net.perfectdreams.galleryofdreams.backend.config.GalleryOfDreamsConfig
+import net.perfectdreams.galleryofdreams.backend.interactions.vanilla.GalleryOfDreamsCommand
 import net.perfectdreams.galleryofdreams.backend.plugins.configureRouting
 import net.perfectdreams.galleryofdreams.backend.routes.*
 import net.perfectdreams.galleryofdreams.backend.routes.api.GetFanArtArtistByDiscordIdRoute
@@ -35,6 +42,9 @@ import net.perfectdreams.galleryofdreams.backend.utils.*
 import net.perfectdreams.galleryofdreams.backend.utils.exposed.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.galleryofdreams.common.FanArtTag
 import net.perfectdreams.galleryofdreams.common.data.*
+import net.perfectdreams.loritta.morenitta.interactions.InteractionsListener
+import net.perfectdreams.loritta.morenitta.interactions.InteractivityManager
+import net.perfectdreams.loritta.morenitta.interactions.commands.UnleashedCommandManager
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -46,7 +56,10 @@ import java.sql.ResultSet
 import java.time.Duration
 import kotlin.concurrent.thread
 
-class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
+class GalleryOfDreamsBackend(
+    val config: GalleryOfDreamsConfig,
+    val languageManager: LanguageManager
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
         val webhookLinkRegex = Regex("https?://(?:[A-z]+\\.)?discord\\.com/api/webhooks/([0-9]+)/([A-z0-9-_]+)")
@@ -107,8 +120,28 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
             .build()
     }
     val svgIconManager = SVGIconManager(this)
+    val commandManager = UnleashedCommandManager(this)
+    val interactivityManager = InteractivityManager()
+    val etherealGambiClient = EtherealGambiClient(config.etherealGambi.url)
 
     fun start() {
+        commandManager.register(GalleryOfDreamsCommand(this))
+
+        // We only care about specific intents
+        val jda = JDABuilder.createLight(
+            config.discord.token,
+            GatewayIntent.GUILD_MEMBERS,
+            GatewayIntent.MESSAGE_CONTENT
+        )
+            .addEventListeners(
+                InteractionsListener(this),
+            )
+            .setMemberCachePolicy(MemberCachePolicy.ALL)
+            .setRawEventsEnabled(true)
+            .setActivity(Activity.customStatus("fanarts.perfectdreams.net"))
+            .build()
+            .awaitReady()
+
         runBlocking {
             transaction {
                 createOrUpdatePostgreSQLEnum(FanArtTag.values())
@@ -304,7 +337,7 @@ class GalleryOfDreamsBackend(val languageManager: LanguageManager) {
         fanArt[FanArts.title],
         fanArt[FanArts.description],
         fanArt[FanArts.createdAt],
-        fanArt[FanArts.dreamStorageServiceImageId],
+        0, // unused
         fanArt[FanArts.file],
         fanArt[FanArts.preferredMediaType],
         FanArtTags.select(FanArtTags.tag).where { FanArtTags.fanArt eq fanArt[FanArts.id] }

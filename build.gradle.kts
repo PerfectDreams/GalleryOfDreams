@@ -14,6 +14,7 @@ allprojects {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven("https://repo.perfectdreams.net/")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
+        maven("https://jitpack.io")
         google()
     }
 }

@@ -16,12 +16,17 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
+    implementation("net.perfectdreams.etherealgambi:client:1.0.2")
 
     implementation("ch.qos.logback:logback-classic:1.5.10")
     implementation("commons-codec:commons-codec:1.15")
 
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     implementation("org.jsoup:jsoup:1.16.1")
+
+    // Discord
+    implementation("com.github.LorittaBot:DeviousJDA:4235406ee9")
+    implementation("club.minnced:jda-ktx:0.12.0")
 
     // Databases
     implementation("org.jetbrains.exposed:exposed-core:0.55.0")
@@ -43,6 +48,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.3")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLINX_SERIALIZATION}")
 
     // https://mvnrepository.com/artifact/club.minnced/discord-webhooks
     implementation("club.minnced:discord-webhooks:0.8.4")

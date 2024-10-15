@@ -85,7 +85,7 @@ class GetFanArtArtistRoute(m: GalleryOfDreamsBackend) : LocalizedRoute(m, "/arti
                         it[FanArts.title],
                         it[FanArts.description],
                         it[FanArts.createdAt],
-                        it[FanArts.dreamStorageServiceImageId],
+                        0, // unused
                         it[FanArts.file],
                         it[FanArts.preferredMediaType],
                         FanArtTags.select(FanArtTags.tag).where { FanArtTags.fanArt eq it[FanArts.id] }

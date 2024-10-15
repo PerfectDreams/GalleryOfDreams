@@ -7,6 +7,7 @@ enum class FanArtTag(
     val title: StringI18nData
 ) {
     OUTSTANDING_FAN_ART(I18nKeysData.FanArtTags.OutstandingFanArt),
+    LORITTA_HALLOWEEN_2024_EVENT(I18nKeysData.FanArtTags.LorittaHalloween2024Event),
     LORITTA_ANNIVERSARY_2023_EVENT(I18nKeysData.FanArtTags.LorittaAnniversary2023Event),
     LORITTA_ANNIVERSARY_2022_EVENT(I18nKeysData.FanArtTags.LorittaAnniversary2022Event),
     LORITTA_CHRISTMAS_2021_EVENT(I18nKeysData.FanArtTags.LorittaChristmas2021Event),

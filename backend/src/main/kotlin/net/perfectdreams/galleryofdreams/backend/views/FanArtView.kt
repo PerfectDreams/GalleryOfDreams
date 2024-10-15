@@ -33,7 +33,6 @@ class FanArtView(
     private val fanArt: FanArt
 ) : DashboardView(m, i18nContext, title, pathWithoutLocaleId) {
     override fun rightSidebar(): FlowContent.() -> (Unit) = {
-        val extension = MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)
         val url = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${fanArt.file}"
         a(href = url) {
             img(src = url) {
@@ -92,7 +91,7 @@ class FanArtView(
         meta(content = i18nContext.get(I18nKeysData.WebsiteTitle)) {
             attributes["property"] = "og:site_name"
         }
-        meta(content = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${StoragePaths.FanArt("${fanArt.file}.${MediaTypeUtils.convertContentTypeToExtension(fanArt.preferredMediaType)}").join()}") {
+        meta(content = "https://assets.perfectdreams.media/galleryofdreams/fan-arts/${fanArt.file}") {
             attributes["property"] = "og:image"
         }
         meta(name = "twitter:card", content = "summary_large_image")
