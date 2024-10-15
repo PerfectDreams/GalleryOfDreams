@@ -5,6 +5,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.generics.getChannel
 import dev.minn.jda.ktx.messages.InlineMessage
+import dev.minn.jda.ktx.messages.MessageCreate
 import dev.minn.jda.ktx.messages.MessageEdit
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -255,7 +256,6 @@ class GalleryOfDreamsCommand(val loritta: GalleryOfDreamsBackend) : SlashCommand
                             fanArtArtist
                         }
 
-
                         if (fanArtArtist == null) {
                             it.reply(true) {
                                 styled(
@@ -321,19 +321,17 @@ class GalleryOfDreamsCommand(val loritta: GalleryOfDreamsBackend) : SlashCommand
                                 }
 
                                 GlobalScope.launch {
-                                    if (matchedFanArtArtist != null) {
-                                        loritta.webhookClient?.send(
-                                            WebhookMessageBuilder()
-                                                .setContent("<:gabriela_brush:727259143903248486> **Fan Art adicionada!** (<@${artistId}>) <a:lori_lick:957368372025262120> $newFanArtUrl")
-                                                .build()
-                                        )
-                                    } else {
-                                        loritta.webhookClient?.send(
-                                            WebhookMessageBuilder()
-                                                .setContent("<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionadas!** (<@${artistId}>) <a:lori_lick:957368372025262120> $newFanArtUrl")
-                                                .build()
-                                        )
-                                    }
+                                    val galleryLogChannel = user.jda.getTextChannelById(loritta.config.discord.channels.galleryLogId)
+
+                                    galleryLogChannel?.sendMessage(
+                                        MessageCreate {
+                                            if (matchedFanArtArtist != null) {
+                                                content = "<:gabriela_brush:727259143903248486> **Fan Art adicionada!** (<@${artistId}>) <a:lori_lick:957368372025262120> $newFanArtUrl"
+                                            } else {
+                                                content = "<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionadas!** (<@${artistId}>) <a:lori_lick:957368372025262120> $newFanArtUrl"
+                                            }
+                                        }
+                                    )?.await()
                                 }
                             }
                             UploadFileResponse.FileAlreadyExists -> {

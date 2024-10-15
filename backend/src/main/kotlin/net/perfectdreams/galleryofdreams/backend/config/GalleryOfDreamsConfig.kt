@@ -9,8 +9,14 @@ data class GalleryOfDreamsConfig(
 ) {
     @Serializable
     data class DiscordConfig(
-        val token: String
-    )
+        val token: String,
+        val channels: DiscordChannelsConfig
+    ) {
+        @Serializable
+        data class DiscordChannelsConfig(
+            val galleryLogId: Long
+        )
+    }
 
     @Serializable
     data class EtherealGambiConfig(
