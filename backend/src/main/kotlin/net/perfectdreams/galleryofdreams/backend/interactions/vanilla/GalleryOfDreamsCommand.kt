@@ -122,7 +122,7 @@ class GalleryOfDreamsCommand(val loritta: GalleryOfDreamsBackend) : SlashCommand
             selectedTags: List<FanArtTag>
         ) {
             content = buildString {
-                if (matchedFanArtArtist != null) {
+                if (matchedFanArtArtist == null) {
                     append("**(Artista que não está no banco de dados da Galeria dos Sonhos! O artista será criado na galeria dos sonhos ao enviar a fan art)**")
                 }
                 append(" Configure as informações da Fan Art!")
