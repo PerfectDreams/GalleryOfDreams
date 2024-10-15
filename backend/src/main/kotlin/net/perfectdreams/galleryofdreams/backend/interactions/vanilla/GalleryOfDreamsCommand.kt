@@ -324,8 +324,14 @@ class GalleryOfDreamsCommand(val loritta: GalleryOfDreamsBackend) : SlashCommand
                                 .selectAll()
                                 .where { FanArtArtistDiscordConnections.discordId eq artistId }
                                 .firstOrNull()
-                            if (existingFanArtArtist != null)
+                            if (existingFanArtArtist != null) {
+                                // Update the artist name
+                                FanArtArtists.update({ FanArtArtists.id eq existingFanArtArtist[FanArtArtists.id ]}) {
+                                    it[FanArtArtists.name] = artistName
+                                }
+
                                 return@transaction existingFanArtArtist
+                            }
 
                             // Cleans up the user's name to make it be the user's name, if the result is a empty string we use a "ifEmpty" call to change it to the user's ID
                             val fanArtArtistSlug = artistSlug.lowercase()
