@@ -34,10 +34,8 @@ import net.perfectdreams.galleryofdreams.common.data.DiscordSocialConnection
 import net.perfectdreams.loritta.morenitta.interactions.commands.*
 import net.perfectdreams.loritta.morenitta.interactions.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.morenitta.interactions.styled
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import java.security.MessageDigest
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -56,6 +54,106 @@ class GalleryOfDreamsCommand(val loritta: GalleryOfDreamsBackend) : SlashCommand
     override fun command() = slashCommand("galleryofdreams", "Comandos relacionados a Galeria dos Sonhos") {
         subcommand("add", "Adiciona uma Fan Art na Galeria dos Sonhos pelo link dela") {
             executor = AddFanArtExecutor(loritta)
+        }
+
+        subcommand("patch", "Altera as informações de uma Fan Art na Galeria dos Sonhos") {
+            executor = PatchFanArtExecutor(loritta)
+        }
+    }
+
+    class PatchFanArtExecutor(val loritta: GalleryOfDreamsBackend) : GalleryOfDreamsSlashCommandExecutor() {
+        inner class Options : ApplicationCommandOptions() {
+            val fanArtUrl = string("fan_art_url", "Link da Fan Art na Galeria")
+        }
+
+        override val options = Options()
+
+        override suspend fun executeGalleryOfDreams(context: ApplicationCommandContext, args: SlashCommandArguments) {
+            context.deferChannelMessage(true)
+
+            val fanArtSlug = args[options.fanArtUrl].substringAfterLast("/")
+
+            val fanArt = loritta.transaction {
+                FanArts.selectAll()
+                    .where {
+                        FanArts.slug eq fanArtSlug
+                    }
+                    .firstOrNull()
+            }
+
+            if (fanArt == null) {
+                context.reply(true) {
+                    styled(
+                        "Fan Art não existe!"
+                    )
+                }
+                return
+            }
+
+            context.reply(true) {
+                patchFanArtMessage(fanArt, context.user, listOf())
+            }
+        }
+
+        fun InlineMessage<*>.patchFanArtMessage(
+            fanArt: ResultRow,
+            user: User,
+            selectedTags: List<FanArtTag>
+        ) {
+            content = buildString {
+                append("Configure as informações da Fan Art!")
+            }
+
+            actionRow(
+                loritta.interactivityManager.stringSelectMenu({
+                    for (tag in FanArtTag.entries) {
+                        addOption(tag.name, tag.name)
+                    }
+
+                    this.setMinValues(0)
+                    this.setMaxValues(FanArtTag.entries.size)
+                    this.setDefaultValues(selectedTags.map { it.name })
+                }) { context, strings ->
+                    val hook = context.deferEdit()
+
+                    hook.editOriginal(
+                        MessageEdit {
+                            patchFanArtMessage(fanArt, user, strings.map { FanArtTag.valueOf(it) })
+                        }
+                    ).await()
+                }
+            )
+
+            actionRow(
+                loritta.interactivityManager.buttonForUser(
+                    user,
+                    ButtonStyle.SUCCESS,
+                    "Atualizar Fan Art"
+                ) {
+                    it.deferChannelMessage(true)
+
+                    // Patch fan art!
+
+                    loritta.transaction {
+                        FanArtTags.deleteWhere {
+                            FanArtTags.fanArt eq fanArt[FanArts.id]
+                        }
+
+                        for (tag in selectedTags) {
+                            FanArtTags.insert {
+                                it[FanArtTags.fanArt] = fanArt[FanArts.id]
+                                it[FanArtTags.tag] = tag
+                            }
+                        }
+                    }
+
+                    it.reply(true) {
+                        styled(
+                            "Fan Art editada! <:gabriela_brush:727259143903248486>"
+                        )
+                    }
+                }
+            )
         }
     }
 
