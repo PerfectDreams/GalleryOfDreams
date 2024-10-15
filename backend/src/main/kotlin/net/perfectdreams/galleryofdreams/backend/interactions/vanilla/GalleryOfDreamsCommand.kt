@@ -324,17 +324,13 @@ class GalleryOfDreamsCommand(val loritta: GalleryOfDreamsBackend) : SlashCommand
                                     if (matchedFanArtArtist != null) {
                                         loritta.webhookClient?.send(
                                             WebhookMessageBuilder()
-                                                // No mentions are allowed!
-                                                .setAllowedMentions(AllowedMentions.none())
-                                                .setContent("<:gabriela_brush:727259143903248486> **Fan Art adicionado!** <a:lori_lick:957368372025262120> $newFanArtUrl")
+                                                .setContent("<:gabriela_brush:727259143903248486> **Fan Art adicionada!** (<@${artistId}>) <a:lori_lick:957368372025262120> $newFanArtUrl")
                                                 .build()
                                         )
                                     } else {
                                         loritta.webhookClient?.send(
                                             WebhookMessageBuilder()
-                                                // No mentions are allowed!
-                                                .setAllowedMentions(AllowedMentions.none())
-                                                .setContent("<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionados!** <a:lori_lick:957368372025262120> $newFanArtUrl")
+                                                .setContent("<:gabriela_brush:727259143903248486> **Artista e Fan Art adicionadas!** (<@${artistId}>) <a:lori_lick:957368372025262120> $newFanArtUrl")
                                                 .build()
                                         )
                                     }
