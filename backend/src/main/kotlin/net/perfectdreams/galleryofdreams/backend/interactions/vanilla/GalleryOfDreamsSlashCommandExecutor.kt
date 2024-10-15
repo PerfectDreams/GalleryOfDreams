@@ -15,7 +15,7 @@ abstract class GalleryOfDreamsSlashCommandExecutor : LorittaSlashCommandExecutor
             return
         }
 
-        if (context.member.roles.any { it.idLong == 924649809103691786L }) {
+        if (!context.member.roles.any { it.idLong == 924649809103691786L }) {
             context.reply(true) {
                 content = "Você não tem o poder de adicionar fan arts na galeria!"
             }
