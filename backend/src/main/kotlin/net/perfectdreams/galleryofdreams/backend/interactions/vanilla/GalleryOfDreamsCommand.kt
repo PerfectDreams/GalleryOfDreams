@@ -342,7 +342,7 @@ class GalleryOfDreamsCommand(val loritta: GalleryOfDreamsBackend) : SlashCommand
 
                             val slugIsAvailable = FanArtArtists.selectAll().where {
                                 FanArtArtists.slug eq fanArtArtistSlug
-                            }.count() != 0L
+                            }.count() == 0L
 
                             val fanArtArtist = FanArtArtists.insert {
                                 it[FanArtArtists.name] = artistName
